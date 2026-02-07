@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💍 Wedding Invitation - Digital Wedding Invitation Platform
 
-## Getting Started
+Sebuah platform undangan pernikahan digital modern dengan fitur QR Code check-in, RSVP online, dan dashboard admin.
 
-First, run the development server:
+---
+
+## 📋 Persyaratan Sistem
+
+Sebelum menjalankan project ini, pastikan sudah terinstall:
+
+| Software | Versi Minimum | Download |
+|----------|---------------|----------|
+| Node.js | v18.0.0+ | [nodejs.org](https://nodejs.org) |
+| npm | v9.0.0+ | Termasuk dalam Node.js |
+
+### Cara Cek Versi:
+```bash
+node --version
+npm --version
+```
+
+---
+
+## 🚀 Instruksi Setup (Langkah demi Langkah)
+
+### Langkah 1: Buka Terminal/Command Prompt
+
+- **Windows**: Klik kanan di folder project → "Open in Terminal" atau buka CMD lalu `cd` ke folder project
+- **Mac/Linux**: Buka Terminal, lalu `cd` ke folder project
+
+### Langkah 2: Install Dependencies
+
+```bash
+npm install
+```
+
+> ⏳ Tunggu hingga selesai (bisa memakan waktu 2-5 menit tergantung koneksi internet)
+
+### Langkah 3: Setup Database
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### Langkah 4: Jalankan Project
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Langkah 5: Buka di Browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Setelah muncul pesan "Ready", buka browser dan akses:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+http://localhost:3000
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🔑 Login Dashboard Admin
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Untuk mengakses dashboard admin, buka:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+http://localhost:3000/login
+```
 
-## Deploy on Vercel
+**Default Credentials:**
+- **Username:** `admin`
+- **Password:** `admin123`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📂 Struktur Menu Dashboard
+
+| Menu | Fungsi |
+|------|--------|
+| **Dashboard** | Ringkasan statistik tamu & RSVP |
+| **Event Details** | Atur detail acara (nama, tanggal, lokasi, ceremony, reception) |
+| **Guest List** | CRUD tamu, download undangan (PNG/JPG/PDF) |
+| **RSVP** | Lihat daftar ucapan & konfirmasi kehadiran |
+| **Galeri** | Upload & kelola foto prewedding |
+| **Scanner** | Scan QR Code untuk check-in tamu |
+| **Settings** | Atur tema warna & font undangan |
+
+---
+
+## 🎯 Fitur Utama
+
+1. **CRUD Penerima Undangan** - Tambah, edit, hapus daftar tamu
+2. **QR Code Unik** - Setiap tamu mendapat QR code unik untuk check-in
+3. **QR Scanner** - Scan QR untuk registrasi kehadiran tamu
+4. **Download Undangan** - Export undangan ke PNG, JPG, atau PDF
+5. **RSVP Online** - Tamu dapat konfirmasi kehadiran via web
+6. **Galeri Foto** - Upload foto prewedding yang tampil di undangan
+7. **Tema Kustomisasi** - Ubah warna dan font sesuai keinginan
+
+---
+
+## ⚠️ Troubleshooting
+
+### Error: "Turbopack failed to create whole tree"
+
+Jalankan dengan perintah ini:
+```bash
+npx next dev --no-turbo
+```
+
+### Error: "Cannot find module..."
+
+Jalankan ulang:
+```bash
+npm install
+```
+
+### Error: "Database connection failed"
+
+Pastikan file `.env` ada dan berisi:
+```
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+Lalu jalankan:
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### Port 3000 sudah digunakan
+
+Tutup aplikasi lain yang menggunakan port 3000, atau restart komputer, lalu jalankan ulang:
+```bash
+npm run dev
+```
+
+---
+
+## 🛑 Cara Menghentikan Server
+
+Tekan `Ctrl + C` di terminal.
+
+---
+
+## 📞 Kontak Support
+
+Jika mengalami kendala, hubungi developer.
+
+---
+
+## 📝 Catatan Penting
+
+- **JANGAN** hapus folder `prisma/` - berisi struktur database
+- **JANGAN** hapus file `.env` - berisi konfigurasi penting
+- Folder `node_modules/` dan `.next/` akan otomatis dibuat saat menjalankan `npm install` dan `npm run dev`
+
+---
+
+**© 2026 Wedding Invitation Platform**

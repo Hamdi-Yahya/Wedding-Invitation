@@ -1,0 +1,128 @@
+// Prisma schema untuk Wedding Invitation Platform
+// Database: MySQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Tabel Admin - Single tenant owner
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String   // Hashed dengan bcrypt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// Tabel EventSettings - Informasi inti acara pernikahan
+model EventSettings {
+  id             Int      @id @default(autoincrement())
+  partner1Name   String   @map("partner_1_name") // Nama Pria
+  partner2Name   String   @map("partner_2_name") // Nama Wanita
+  tagline        String?  // Tagline undangan
+  eventDate      DateTime @map("event_date") // Tanggal acara
+  startTime      String   @map("start_time") // Waktu mulai (format: "HH:mm")
+  endTime        String   @map("end_time") // Waktu selesai (format: "HH:mm")
+  venueName      String   @map("venue_name") // Nama venue
+  venueAddress   String   @map("venue_address") @db.Text // Alamat lengkap
+  mapLinkUrl     String?  @map("map_link_url") @db.Text // Link Google Maps
+  waTemplateMsg  String?  @map("wa_template_msg") @db.Text // Template pesan WhatsApp
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("event_settings")
+}
+
+// Tabel ThemeSettings - Konfigurasi tema undangan
+model ThemeSettings {
+  id                 Int      @id @default(autoincrement())
+  themeName          String   @default("Modern Pink") @map("theme_name")
+  primaryColor       String   @default("#E91E8C") @map("primary_color") // Warna utama (hex)
+  secondaryColor     String   @default("#FFF9F9") @map("secondary_color") // Warna sekunder (hex)
+  fontFamily         String   @default("Parisienne") @map("font_family")
+  backgroundImageUrl String?  @map("background_image_url") @db.Text
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("theme_settings")
+}
+
+// Tabel Guests - Data tamu undangan
+model Guest {
+  id           Int       @id @default(autoincrement())
+  name         String    // Nama tamu
+  phoneNumber  String?   @map("phone_number") // Nomor HP untuk WhatsApp
+  category     String    @default("Regular") // VIP atau Regular
+  slug         String    @unique // Unique slug untuk URL undangan personal
+  qrCodeString String    @unique @map("qr_code_string") // Unique string untuk QR
+  rsvpStatus   String    @default("Pending") @map("rsvp_status") // Pending/Coming/Not Coming
+  guestCount   Int       @default(1) @map("guest_count") // Jumlah tamu yang akan hadir
+  checkInTime  DateTime? @map("check_in_time") // Waktu check-in (null jika belum hadir)
+  giftType     String?   @map("gift_type") // Fisik/Amplop/None
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relasi ke Wishes
+  wishes Wish[]
+
+  @@map("guests")
+}
+
+// Tabel Wishes - Ucapan dari tamu
+model Wish {
+  id         Int      @id @default(autoincrement())
+  guestId    Int      @map("guest_id")
+  message    String   @db.Text // Pesan ucapan
+  isApproved Boolean  @default(false) @map("is_approved") // Status approval
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relasi ke Guest
+  guest Guest @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@map("wishes")
+}
+
+// Tabel GalleryImage - Galeri foto pernikahan
+model GalleryImage {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String   @map("image_url") @db.Text // URL gambar
+  altText   String?  @map("alt_text") // Teks alternatif
+  sortOrder Int      @default(0) @map("sort_order") // Urutan tampil
+  isActive  Boolean  @default(true) @map("is_active") // Status aktif
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("gallery_images")
+}
+
+// Tabel WeddingDetails - Detail acara (Ceremony, Reception, Dress Code)
+model WeddingDetails {
+  id              Int      @id @default(autoincrement())
+  // The Ceremony
+  ceremonyTitle   String   @default("The Ceremony") @map("ceremony_title")
+  ceremonyTime    String?  @map("ceremony_time")
+  ceremonyVenue   String?  @map("ceremony_venue")
+  ceremonyAddress String?  @map("ceremony_address")
+  // The Reception
+  receptionTitle  String   @default("The Reception") @map("reception_title")
+  receptionTime   String?  @map("reception_time")
+  receptionVenue  String?  @map("reception_venue")
+  receptionNote   String?  @map("reception_note")
+  // Dress Code
+  dressCodeTitle  String   @default("Dress Code") @map("dress_code_title")
+  dressCodeNote   String?  @map("dress_code_note")
+  dressCodeStyle1 String?  @default("Formal Attire") @map("dress_code_style1")
+  dressCodeStyle2 String?  @default("Smart Casual") @map("dress_code_style2")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("wedding_details")
+}
