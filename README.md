@@ -130,9 +130,8 @@ npx prisma generate
 npx prisma db push
 ```
 
-### Port 3000 sudah digunakan
+### Lalu jalankan
 
-Tutup aplikasi lain yang menggunakan port 3000, atau restart komputer, lalu jalankan ulang:
 ```bash
 npm run dev
 ```
@@ -142,12 +141,6 @@ npm run dev
 ## 🛑 Cara Menghentikan Server
 
 Tekan `Ctrl + C` di terminal.
-
----
-
-## 📞 Kontak Support
-
-Jika mengalami kendala, hubungi developer.
 
 ---
 
