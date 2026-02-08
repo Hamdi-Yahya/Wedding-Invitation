@@ -4,7 +4,7 @@ Platform undangan pernikahan digital modern dengan fitur lengkap: Dashboard Admi
 
 ---
 
-## �️ Persyaratan Sistem
+## 🛠️ Persyaratan Sistem
 
 Sebelum memulai, pastikan komputer Anda sudah terinstall:
 
@@ -16,58 +16,62 @@ Sebelum memulai, pastikan komputer Anda sudah terinstall:
 
 ---
 
-## 🚀 Panduan Instalasi (Clean Install)
+## 🚀 Panduan Instalasi
 
-Ikuti langkah-langkah ini jika Anda baru pertama kali menjalankan project atau setelah menghapus folder `.next` dan `node_modules`.
+Ikuti langkah-langkah ini untuk menjalankan project.
 
 ### 1. Buka Terminal
 Buka folder project ini di VS Code, lalu buka terminal (`Ctrl + ` `).
 
 ### 2. Install Dependencies
-Jalankan perintah berikut untuk menginstall semua library yang dibutuhkan:
-
 ```bash
 npm install
 ```
 *Tunggu hingga proses selesai.*
 
 ### 3. Setup Environment (.env)
-Pastikan file `.env` sudah ada. Jika belum, buat file baru bernama `.env` dan isi dengan konfigurasi berikut (sesuaikan dengan database Anda):
+Pastikan file `.env` sudah ada. Jika belum, buat file baru bernama `.env` dan isi:
 
 ```env
 # Koneksi Database MySQL
-# Format: mysql://USER:PASSWORD@HOST:PORT/DATABASE_NAME
 DATABASE_URL="mysql://root:@localhost:3306/wedding_invitation"
 
-# NextAuth Configuration
-# Ganti dengan random string yang panjang dan unik
+# NextAuth Configuration (GANTI dengan string acak yang aman)
 NEXTAUTH_SECRET="GANTI_DENGAN_STRING_ACAK_YANG_AMAN"
 NEXTAUTH_URL="http://localhost:3000"
 ```
 
 ### 4. Setup Database
-Jalankan perintah ini untuk membuat tabel dan data awal di database:
-
 ```bash
-# Membuat struktur tabel di database
 npx prisma db push
-
-# (Opsional) Mengisi data awal / reset database
 npx prisma db seed
 ```
 
-### 5. Jalankan Aplikasi
-Sekarang jalankan server development:
+### 5. Build & Jalankan Aplikasi (Production Mode)
+
+**Mode Production** lebih stabil dan tidak menggunakan Turbopack:
+
+```bash
+# Build aplikasi (1x saja, atau setiap ada perubahan code)
+npm run build
+
+# Jalankan server
+npm start
+```
+
+Buka browser dan akses **http://localhost:3000**
+
+---
+
+## 🔄 Mode Development (Opsional)
+
+Jika ingin development dengan hot reload (auto-refresh saat edit code):
 
 ```bash
 npm run dev
 ```
 
-Tunggu sampai muncul pesan:
-> **Ready in ... ms**
-> **- Local: http://localhost:3000**
-
-Buka browser dan akses **http://localhost:3000**
+> ⚠️ Mode ini menggunakan Turbopack dan mungkin error di beberapa komputer. Jika error, gunakan **Production Mode** di atas.
 
 ---
 
@@ -79,34 +83,23 @@ Buka browser dan akses **http://localhost:3000**
 
 ---
 
-## ⚠️ Masalah Umum (Troubleshooting)
+## ⚠️ Troubleshooting
 
-### Error: Turbopack "failed to create whole tree"
+### Error saat `npm run dev` (Turbopack)
 
-Jika muncul error seperti ini:
+Gunakan **Production Mode** sebagai alternatif:
+```bash
+npm run build
+npm start
 ```
-FATAL: An unexpected Turbopack error occurred.
-Error [TurbopackInternalError]: failed to create whole tree
+
+### Error: "Cannot find module..."
+```bash
+npm install
 ```
 
-**Solusi:**
-1. **Stop Server**: Tekan `Ctrl + C` di terminal.
-2. **Hapus folder `.next`**:
-   - **Windows (PowerShell)**: `Remove-Item -Recurse -Force .next`
-   - **Mac/Linux**: `rm -rf .next`
-3. **Jalankan ulang**: `npm run dev`
-
----
-
-### Error Umum Lainnya
-
-Jika masih error, lakukan **Reset Total**:
-
-1.  **Stop Server**: Tekan `Ctrl + C` di terminal.
-2.  **Hapus Cache**: Hapus folder `.next` (klik kanan -> delete).
-3.  **Hapus Modules**: Hapus folder `node_modules`.
-4.  **Install Ulang**: Jalankan `npm install`.
-5.  **Jalankan Lagi**: `npm run dev`.
+### Error: Database connection failed
+Pastikan MySQL sudah running dan file `.env` sudah benar.
 
 ---
 
