@@ -1,13 +1,7 @@
-// QR Code Display Component
-// Menampilkan QR code tamu untuk check-in
-
 "use client";
 
 import { useState, useEffect } from "react";
 
-/**
- * Props untuk QRCodeDisplay
- */
 interface QRCodeDisplayProps {
     qrCodeString: string;
     guestName: string;
@@ -15,10 +9,6 @@ interface QRCodeDisplayProps {
     secondaryColor: string;
 }
 
-/**
- * QRCodeDisplay Component
- * Menampilkan QR code tamu yang bisa ditunjukkan saat check-in
- */
 export default function QRCodeDisplay({
     qrCodeString,
     guestName,
@@ -26,11 +16,7 @@ export default function QRCodeDisplay({
 }: QRCodeDisplayProps) {
     const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
 
-    /**
-     * Generate QR code URL menggunakan API eksternal
-     */
     useEffect(() => {
-        // Menggunakan API qrserver.com untuk generate QR
         const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
             qrCodeString
         )}&bgcolor=FFFFFF&color=000000`;
@@ -40,7 +26,6 @@ export default function QRCodeDisplay({
     return (
         <section className="py-16 px-6">
             <div className="max-w-md mx-auto">
-                {/* Section Title */}
                 <div className="text-center mb-10">
                     <p
                         className="text-sm uppercase tracking-widest mb-2"
@@ -53,9 +38,7 @@ export default function QRCodeDisplay({
                     </h2>
                 </div>
 
-                {/* QR Code Card */}
                 <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
-                    {/* QR Code */}
                     <div className="mb-6">
                         {qrCodeUrl ? (
                             <img
@@ -68,7 +51,6 @@ export default function QRCodeDisplay({
                         )}
                     </div>
 
-                    {/* Guest Name */}
                     <h3
                         className="text-xl font-semibold mb-2"
                         style={{ color: primaryColor }}
@@ -76,12 +58,10 @@ export default function QRCodeDisplay({
                         {guestName}
                     </h3>
 
-                    {/* Instruction */}
                     <p className="text-gray-500 text-sm mb-6">
                         Tunjukkan QR code ini saat registrasi di venue
                     </p>
 
-                    {/* Download Button */}
                     <a
                         href={qrCodeUrl}
                         download={`qr-code-${guestName.toLowerCase().replace(/\s+/g, "-")}.png`}
@@ -105,7 +85,6 @@ export default function QRCodeDisplay({
                     </a>
                 </div>
 
-                {/* Note */}
                 <p className="text-center text-sm text-gray-400 mt-4">
                     Simpan atau screenshot QR code ini
                 </p>

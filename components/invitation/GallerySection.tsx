@@ -1,35 +1,20 @@
-// Gallery Section Component
-// Section galeri foto dengan layout grid responsive - data dari database
-
-/**
- * Interface untuk data GalleryImage
- */
 interface GalleryImage {
     id: number;
     imageUrl: string;
     altText: string | null;
 }
 
-/**
- * Props untuk GallerySection
- */
 interface GallerySectionProps {
     primaryColor: string;
     secondaryColor: string;
     images: GalleryImage[];
 }
 
-/**
- * GallerySection Component
- * Menampilkan galeri foto dari database dengan layout grid responsive
- */
 export default function GallerySection({ primaryColor, secondaryColor, images }: GallerySectionProps) {
-    // Jika tidak ada foto, tampilkan placeholder
     if (images.length === 0) {
         return (
             <section id="gallery" className="py-20 px-6" style={{ backgroundColor: secondaryColor }}>
                 <div className="max-w-5xl mx-auto">
-                    {/* Section Title */}
                     <div className="text-center mb-12">
                         <p
                             className="text-sm mb-2"
@@ -40,7 +25,6 @@ export default function GallerySection({ primaryColor, secondaryColor, images }:
                         <h2 className="text-3xl font-bold text-gray-800">Photo Gallery</h2>
                     </div>
 
-                    {/* Empty State */}
                     <div className="text-center text-gray-400 py-12">
                         <svg
                             className="w-16 h-16 mx-auto mb-4 opacity-50"
@@ -65,7 +49,6 @@ export default function GallerySection({ primaryColor, secondaryColor, images }:
     return (
         <section id="gallery" className="py-20 px-6" style={{ backgroundColor: secondaryColor }}>
             <div className="max-w-5xl mx-auto">
-                {/* Section Title */}
                 <div className="text-center mb-12">
                     <p
                         className="text-sm mb-2"
@@ -76,7 +59,6 @@ export default function GallerySection({ primaryColor, secondaryColor, images }:
                     <h2 className="text-3xl font-bold text-gray-800">Photo Gallery</h2>
                 </div>
 
-                {/* Gallery Grid - Masonry-like layout menggunakan CSS columns */}
                 <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
                     {images.map((image) => (
                         <div

@@ -1,13 +1,7 @@
-// Wishes Section Component
-// Section ucapan dari tamu - mode publik
-
 "use client";
 
 import { useState } from "react";
 
-/**
- * Interface untuk data wish
- */
 interface WishData {
     id: number;
     guestName: string;
@@ -15,19 +9,12 @@ interface WishData {
     createdAt: string;
 }
 
-/**
- * Props untuk WishesSection
- */
 interface WishesSectionProps {
     wishes: WishData[];
     primaryColor: string;
     secondaryColor: string;
 }
 
-/**
- * WishesSection Component
- * Menampilkan daftar ucapan dan form untuk mengirim ucapan baru
- */
 export default function WishesSection({
     wishes: initialWishes,
     primaryColor,
@@ -44,9 +31,6 @@ export default function WishesSection({
         text: string;
     } | null>(null);
 
-    /**
-     * Handle input change
-     */
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) {
@@ -54,9 +38,6 @@ export default function WishesSection({
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    /**
-     * Handle submit wish
-     */
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
@@ -88,7 +69,6 @@ export default function WishesSection({
                     type: "success",
                     text: "Ucapan Anda akan ditampilkan setelah disetujui.",
                 });
-                // Reset form
                 setFormData({ name: "", message: "" });
             } else {
                 setSubmitMessage({
@@ -107,9 +87,6 @@ export default function WishesSection({
         }
     }
 
-    /**
-     * Format tanggal untuk display
-     */
     function formatDate(dateString: string): string {
         const date = new Date(dateString);
         return date.toLocaleDateString("id-ID", {
@@ -122,18 +99,16 @@ export default function WishesSection({
     return (
         <section id="wishes" className="py-20 px-6" style={{ backgroundColor: secondaryColor }}>
             <div className="max-w-2xl mx-auto">
-                {/* Section Title */}
                 <div className="text-center mb-10">
                     <p
                         className="text-sm mb-2"
                         style={{ fontFamily: "'Parisienne', cursive", color: primaryColor }}
                     >
-                        Kirim Doa & Ucapan
+                        Kirim Doa &amp; Ucapan
                     </p>
-                    <h2 className="text-2xl font-bold text-gray-800">Ucapan & Doa</h2>
+                    <h2 className="text-2xl font-bold text-gray-800">Ucapan &amp; Doa</h2>
                 </div>
 
-                {/* Submit Form */}
                 <form
                     onSubmit={handleSubmit}
                     className="bg-white rounded-2xl p-6 shadow-sm mb-8"
@@ -167,7 +142,7 @@ export default function WishesSection({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Ucapan & Doa <span className="text-red-500">*</span>
+                                Ucapan &amp; Doa <span className="text-red-500">*</span>
                             </label>
                             <textarea
                                 name="message"
@@ -191,7 +166,6 @@ export default function WishesSection({
                     </div>
                 </form>
 
-                {/* Wishes List */}
                 {wishes.length > 0 && (
                     <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto mt-6">
                         {wishes.map((wish) => (
@@ -200,7 +174,6 @@ export default function WishesSection({
                                 className="bg-white rounded-xl p-3 shadow-sm"
                             >
                                 <div className="flex items-start gap-2">
-                                    {/* Avatar */}
                                     <div
                                         className="w-7 h-7 rounded-full flex items-center justify-center text-white font-semibold text-xs flex-shrink-0"
                                         style={{ backgroundColor: primaryColor }}

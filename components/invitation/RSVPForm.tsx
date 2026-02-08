@@ -1,25 +1,15 @@
-// RSVP Form Component
-// Form konfirmasi kehadiran tamu - mendukung mode publik dan personalized
-
 "use client";
 
 import { useState } from "react";
 
-/**
- * Props untuk RSVPForm
- */
 interface RSVPFormProps {
     primaryColor: string;
     secondaryColor: string;
-    guestSlug?: string;  // Optional: slug tamu dari URL untuk update existing guest
-    guestName?: string;  // Optional: nama tamu yang sudah diketahui
-    guestPhone?: string; // Optional: nomor HP tamu yang sudah diketahui
+    guestSlug?: string;
+    guestName?: string;
+    guestPhone?: string;
 }
 
-/**
- * RSVPForm Component
- * Form untuk konfirmasi kehadiran dengan input nama tamu
- */
 export default function RSVPForm({
     primaryColor,
     secondaryColor,
@@ -41,9 +31,6 @@ export default function RSVPForm({
         text: string;
     } | null>(null);
 
-    /**
-     * Handle input change
-     */
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) {
@@ -51,13 +38,9 @@ export default function RSVPForm({
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    /**
-     * Handle submit RSVP
-     */
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        // Jika ada slug, gunakan nama dari slug; jika tidak, validasi input nama
         if (!guestSlug && !formData.fullName.trim()) {
             setSubmitMessage({
                 type: "error",
@@ -74,7 +57,7 @@ export default function RSVPForm({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    slug: guestSlug,  // Kirim slug untuk update existing guest
+                    slug: guestSlug,
                     name: guestSlug ? guestName : formData.fullName,
                     phoneNumber: formData.phoneNumber,
                     rsvpStatus: formData.rsvpStatus,
@@ -85,13 +68,11 @@ export default function RSVPForm({
             const data = await response.json();
 
             if (response.ok) {
-                // Jika dari halaman publik (tanpa slug), redirect ke halaman personalized
                 if (!guestSlug && data.guest?.slug) {
                     setSubmitMessage({
                         type: "success",
                         text: "Terima kasih! Mengalihkan ke undangan Anda...",
                     });
-                    // Redirect ke halaman personalized dengan QR code
                     setTimeout(() => {
                         window.location.href = `/invite/${data.guest.slug}`;
                     }, 1500);
@@ -121,7 +102,6 @@ export default function RSVPForm({
     return (
         <section id="rsvp" className="py-20 px-6" style={{ backgroundColor: secondaryColor }}>
             <div className="max-w-xl mx-auto">
-                {/* Section Title */}
                 <div className="text-center mb-10">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">
                         Konfirmasi Kehadiran
@@ -131,10 +111,8 @@ export default function RSVPForm({
                     </p>
                 </div>
 
-                {/* RSVP Form Card */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Message */}
                         {submitMessage && (
                             <div
                                 className={`p-4 rounded-xl text-sm ${submitMessage.type === "success"
@@ -146,7 +124,6 @@ export default function RSVPForm({
                             </div>
                         )}
 
-                        {/* Full Name - ditampilkan hanya jika tidak ada slug */}
                         {!guestSlug ? (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -169,7 +146,6 @@ export default function RSVPForm({
                             </div>
                         )}
 
-                        {/* Phone Number */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Nomor WhatsApp
@@ -184,7 +160,6 @@ export default function RSVPForm({
                             />
                         </div>
 
-                        {/* Attendance Options */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-3">
                                 Konfirmasi Kehadiran
@@ -235,7 +210,6 @@ export default function RSVPForm({
                             </div>
                         </div>
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={isSubmitting}

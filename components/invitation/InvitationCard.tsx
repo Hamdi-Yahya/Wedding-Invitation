@@ -1,11 +1,5 @@
-// Invitation Card Component untuk Download
-// Komponen undangan yang bisa di-generate sebagai gambar/PDF
-
 import React, { forwardRef } from "react";
 
-/**
- * Props untuk InvitationCard
- */
 interface InvitationCardProps {
     guestName: string;
     partner1Name: string;
@@ -20,9 +14,6 @@ interface InvitationCardProps {
     qrCodeString?: string;
 }
 
-/**
- * Format tanggal ke format Indonesia
- */
 function formatDateIndonesia(date: Date | string): string {
     const d = new Date(date);
     const months = [
@@ -33,9 +24,6 @@ function formatDateIndonesia(date: Date | string): string {
     return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-/**
- * Format waktu ke format 12 jam
- */
 function formatTime(time: string): string {
     if (!time) return "";
     const [hours, minutes] = time.split(":");
@@ -45,10 +33,6 @@ function formatTime(time: string): string {
     return `${h12}:${minutes} ${ampm}`;
 }
 
-/**
- * InvitationCard Component
- * Kartu undangan yang siap di-download
- */
 const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
     function InvitationCard(
         {
@@ -83,7 +67,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                     boxSizing: "border-box",
                 }}
             >
-                {/* Border Frame */}
                 <div
                     style={{
                         position: "absolute",
@@ -96,7 +79,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                     }}
                 />
 
-                {/* Content Container */}
                 <div
                     style={{
                         display: "flex",
@@ -108,7 +90,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         textAlign: "center",
                     }}
                 >
-                    {/* Guest Badge */}
                     <div
                         style={{
                             backgroundColor: primaryColor,
@@ -125,14 +106,12 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         {category === "VIP" ? "VIP Guest" : "Special Guest"}: {guestName}
                     </div>
 
-                    {/* Flower Icon */}
                     <div style={{ color: primaryColor, marginBottom: "16px" }}>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C10.9 2 10 2.9 10 4C10 5.1 10.9 6 12 6C13.1 6 14 5.1 14 4C14 2.9 13.1 2 12 2ZM6 6C4.9 6 4 6.9 4 8C4 9.1 4.9 10 6 10C7.1 10 8 9.1 8 8C8 6.9 7.1 6 6 6ZM18 6C16.9 6 16 6.9 16 8C16 9.1 16.9 10 18 10C19.1 10 20 9.1 20 8C20 6.9 19.1 6 18 6ZM12 8C9.8 8 8 9.8 8 12C8 14.2 9.8 16 12 16C14.2 16 16 14.2 16 12C16 9.8 14.2 8 12 8ZM3 12C1.9 12 1 12.9 1 14C1 15.1 1.9 16 3 16C4.1 16 5 15.1 5 14C5 12.9 4.1 12 3 12ZM21 12C19.9 12 19 12.9 19 14C19 15.1 19.9 16 21 16C22.1 16 23 15.1 23 14C23 12.9 22.1 12 21 12ZM12 18C9.8 18 8 19.8 8 22H16C16 19.8 14.2 18 12 18Z" />
                         </svg>
                     </div>
 
-                    {/* Together Text */}
                     <p
                         style={{
                             color: primaryColor,
@@ -146,7 +125,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         Together With Their Families
                     </p>
 
-                    {/* Couple Names */}
                     <h1
                         style={{
                             fontSize: "42px",
@@ -180,7 +158,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         {partner2Name}
                     </h1>
 
-                    {/* Invitation Text */}
                     <p
                         style={{
                             fontSize: "13px",
@@ -195,7 +172,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         happiness as they unite in marriage
                     </p>
 
-                    {/* Date */}
                     <h2
                         style={{
                             fontSize: "18px",
@@ -207,7 +183,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         {formattedDate}
                     </h2>
 
-                    {/* Time Icons */}
                     <div
                         style={{
                             display: "flex",
@@ -248,7 +223,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         </div>
                     </div>
 
-                    {/* Venue */}
                     <div style={{ color: primaryColor, marginBottom: "8px" }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
@@ -276,7 +250,6 @@ const InvitationCard = forwardRef<HTMLDivElement, InvitationCardProps>(
                         {venueAddress}
                     </p>
 
-                    {/* QR Code Section */}
                     {qrCodeString && (
                         <div
                             style={{

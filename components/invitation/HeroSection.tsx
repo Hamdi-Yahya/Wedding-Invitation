@@ -1,13 +1,7 @@
-// Hero Section Component
-// Section pembuka undangan dengan nama pasangan, foto, dan countdown
-
 "use client";
 
 import { useState, useEffect } from "react";
 
-/**
- * Props untuk HeroSection
- */
 interface HeroSectionProps {
     guestName: string;
     partner1Name: string;
@@ -19,15 +13,8 @@ interface HeroSectionProps {
     backgroundImageUrl?: string;
 }
 
-/**
- * Default background image URL
- */
 const DEFAULT_BACKGROUND_URL = "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=1600";
 
-/**
- * HeroSection Component
- * Menampilkan hero dengan foto pasangan, nama, dan countdown
- */
 export default function HeroSection({
     guestName,
     partner1Name,
@@ -44,9 +31,6 @@ export default function HeroSection({
         seconds: 0,
     });
 
-    /**
-     * Calculate countdown to event date
-     */
     useEffect(() => {
         const targetDate = new Date(eventDate).getTime();
 
@@ -69,18 +53,12 @@ export default function HeroSection({
         return () => clearInterval(interval);
     }, [eventDate]);
 
-    /**
-     * Format tanggal untuk display
-     */
     const formattedEventDate = new Date(eventDate).toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
-    /**
-     * Get background image URL (custom or default)
-     */
     function getBackgroundUrl(): string {
         if (backgroundImageUrl && backgroundImageUrl.trim() !== "") {
             return backgroundImageUrl;
@@ -90,7 +68,6 @@ export default function HeroSection({
 
     return (
         <section className="relative">
-            {/* Navigation Header */}
             <nav className="absolute top-0 left-0 right-0 z-20 px-8 py-4">
                 <div className="max-w-6xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -110,7 +87,6 @@ export default function HeroSection({
                 </div>
             </nav>
 
-            {/* Hero Image Background */}
             <div className="relative h-[600px] md:h-[700px]">
                 <div
                     className="absolute inset-0 bg-cover bg-center"
@@ -121,12 +97,9 @@ export default function HeroSection({
                     <div className="absolute inset-0 bg-black/20"></div>
                 </div>
 
-                {/* Hero Content */}
                 <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-                    {/* Kepada */}
                     <p className="text-white/80 text-sm mb-2">THE WEDDING OF</p>
 
-                    {/* Couple Names */}
                     <h1
                         className="text-5xl md:text-7xl text-white mb-4"
                         style={{ fontFamily: "'Parisienne', cursive" }}
@@ -134,14 +107,12 @@ export default function HeroSection({
                         {partner1Name} & {partner2Name}
                     </h1>
 
-                    {/* Tagline */}
                     {tagline && (
                         <p className="text-white/90 text-sm md:text-base mb-8 max-w-md">
                             {tagline}
                         </p>
                     )}
 
-                    {/* Buttons */}
                     <div className="flex gap-4">
                         <a
                             href="#rsvp"
@@ -160,11 +131,9 @@ export default function HeroSection({
                 </div>
             </div>
 
-            {/* Date & Countdown Strip */}
             <div className="relative -mt-16 z-10 px-6">
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                        {/* Date Display */}
                         <div className="flex items-center gap-4">
                             <div className="p-3 rounded-full" style={{ backgroundColor: `${primaryColor}15` }}>
                                 <svg className="w-6 h-6" style={{ color: primaryColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +146,6 @@ export default function HeroSection({
                             </div>
                         </div>
 
-                        {/* Countdown */}
                         <div className="flex items-center gap-2">
                             {[
                                 { value: countdown.days, label: "Days" },

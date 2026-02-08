@@ -1,6 +1,3 @@
-// Sidebar Component
-// Navigasi samping untuk dashboard admin dengan responsive hamburger menu
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,17 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-/**
- * Props untuk Sidebar
- */
 interface SidebarProps {
     userName: string;
     partnerNames?: string;
 }
 
-/**
- * Menu items untuk navigasi dashboard
- */
 const menuItems = [
     {
         name: "Dashboard",
@@ -86,24 +77,14 @@ const menuItems = [
     },
 ];
 
-/**
- * Sidebar Component
- * Komponen navigasi samping dengan menu dashboard dan responsive hamburger
- */
 export default function Sidebar({ userName, partnerNames }: SidebarProps) {
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    /**
-     * Close mobile menu saat route berubah
-     */
     useEffect(() => {
         setIsMobileMenuOpen(false);
     }, [pathname]);
 
-    /**
-     * Prevent scroll saat mobile menu terbuka
-     */
     useEffect(() => {
         if (isMobileMenuOpen) {
             document.body.style.overflow = "hidden";
@@ -115,16 +96,10 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
         };
     }, [isMobileMenuOpen]);
 
-    /**
-     * Handle logout
-     */
     async function handleLogout() {
         await signOut({ callbackUrl: "/login" });
     }
 
-    /**
-     * Check apakah menu item aktif
-     */
     function isActive(href: string): boolean {
         if (href === "/dashboard") {
             return pathname === "/dashboard";
@@ -132,16 +107,12 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
         return pathname.startsWith(href);
     }
 
-    /**
-     * Toggle mobile menu
-     */
     function toggleMobileMenu() {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     }
 
     return (
         <>
-            {/* Mobile Header dengan Hamburger */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">
@@ -168,7 +139,6 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
                 </button>
             </div>
 
-            {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
                 <div
                     className="lg:hidden fixed inset-0 bg-black/50 z-40"
@@ -176,7 +146,6 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
                 />
             )}
 
-            {/* Sidebar - Desktop selalu visible, Mobile slide-in */}
             <aside
                 className={`
                     fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 flex flex-col z-50
@@ -185,10 +154,8 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
                     ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
                 `}
             >
-                {/* Logo/Brand Section */}
                 <div className="px-6 py-6 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                        {/* Avatar */}
                         <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center overflow-hidden">
                             <svg className="w-6 h-6 text-[#E91E8C]" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -203,7 +170,6 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
                     </div>
                 </div>
 
-                {/* Navigation Menu */}
                 <nav className="flex-1 px-4 py-6 overflow-y-auto">
                     <ul className="space-y-1">
                         {menuItems.map((item) => {
@@ -228,7 +194,6 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
                     </ul>
                 </nav>
 
-                {/* Logout Button */}
                 <div className="px-4 py-6 border-t border-gray-100">
                     <button
                         onClick={handleLogout}

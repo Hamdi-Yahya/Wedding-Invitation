@@ -1,9 +1,3 @@
-// Map Section Component
-// Section peta lokasi acara
-
-/**
- * Props untuk MapSection
- */
 interface MapSectionProps {
     mapLinkUrl: string;
     venueName: string;
@@ -11,30 +5,19 @@ interface MapSectionProps {
     secondaryColor: string;
 }
 
-/**
- * Extract Google Maps embed URL dari berbagai format link
- */
 function getEmbedUrl(mapLink: string): string {
-    // Jika sudah embed URL, return langsung
     if (mapLink.includes("embed")) {
         return mapLink;
     }
 
-    // Extract place query dari Google Maps link
-    // Format: https://maps.google.com?q=...
     if (mapLink.includes("maps.google.com") || mapLink.includes("goo.gl")) {
         const placeQuery = encodeURIComponent(mapLink);
         return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${placeQuery}`;
     }
 
-    // Default: gunakan sebagai query langsung
     return `https://www.google.com/maps?q=${encodeURIComponent(mapLink)}&output=embed`;
 }
 
-/**
- * MapSection Component
- * Menampilkan peta lokasi venue
- */
 export default function MapSection({
     mapLinkUrl,
     venueName,
@@ -44,7 +27,6 @@ export default function MapSection({
     return (
         <section className="py-16 px-6" style={{ backgroundColor: secondaryColor }}>
             <div className="max-w-2xl mx-auto">
-                {/* Section Title */}
                 <div className="text-center mb-10">
                     <p
                         className="text-sm uppercase tracking-widest mb-2"
@@ -57,7 +39,6 @@ export default function MapSection({
                     </h2>
                 </div>
 
-                {/* Map Container */}
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm">
                     <div className="aspect-video">
                         <iframe

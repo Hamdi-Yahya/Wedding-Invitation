@@ -1,9 +1,3 @@
-// Details Section Component
-// Section detail acara dengan 3 kartu (Ceremony, Reception, Dress Code)
-
-/**
- * Interface untuk Wedding Details dari database
- */
 interface WeddingDetailsData {
     ceremonyTitle: string;
     ceremonyTime: string | null;
@@ -19,9 +13,6 @@ interface WeddingDetailsData {
     dressCodeStyle2: string | null;
 }
 
-/**
- * Props untuk DetailsSection
- */
 interface DetailsSectionProps {
     date: string;
     time: string;
@@ -32,10 +23,6 @@ interface DetailsSectionProps {
     weddingDetails?: WeddingDetailsData | null;
 }
 
-/**
- * DetailsSection Component
- * Menampilkan 3 kartu detail: Ceremony, Reception, Dress Code
- */
 export default function DetailsSection({
     date,
     time,
@@ -45,13 +32,11 @@ export default function DetailsSection({
     secondaryColor,
     weddingDetails,
 }: DetailsSectionProps) {
-    // Parse venue address untuk pemisahan
     const addressParts = venueAddress.split(",");
     const shortAddress = addressParts.length > 1
         ? addressParts.slice(0, 2).join(",").trim()
         : venueAddress;
 
-    // Event details cards data - gunakan data dari database jika ada
     const eventCards = [
         {
             title: weddingDetails?.ceremonyTitle || "The Ceremony",
@@ -99,25 +84,22 @@ export default function DetailsSection({
     return (
         <section id="details" className="py-20 px-6 bg-white">
             <div className="max-w-5xl mx-auto">
-                {/* Section Title */}
                 <div className="text-center mb-12">
                     <p
                         className="text-sm mb-2"
                         style={{ fontFamily: "'Parisienne', cursive", color: primaryColor }}
                     >
-                        When & Where
+                        When &amp; Where
                     </p>
                     <h2 className="text-3xl font-bold text-gray-800">Wedding Details</h2>
                 </div>
 
-                {/* Event Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {eventCards.map((card) => (
                         <div
                             key={card.title}
                             className="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow"
                         >
-                            {/* Icon */}
                             <div
                                 className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
                                 style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
@@ -125,17 +107,14 @@ export default function DetailsSection({
                                 {card.icon}
                             </div>
 
-                            {/* Title */}
                             <h3 className="text-lg font-semibold text-gray-800 mb-2">
                                 {card.title}
                             </h3>
 
-                            {/* Time */}
                             <p style={{ color: primaryColor }} className="text-sm font-medium mb-3">
                                 {card.time}
                             </p>
 
-                            {/* Details */}
                             <div className="text-gray-500 text-sm">
                                 {card.details.map((line, index) => (
                                     <p key={index}>{line}</p>
