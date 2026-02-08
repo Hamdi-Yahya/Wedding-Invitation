@@ -105,6 +105,7 @@ export default async function HomePage() {
         eventDate={eventSettings.eventDate}
         primaryColor={primaryColor}
         secondaryColor={themeSettings.secondaryColor}
+        backgroundImageUrl={themeSettings.backgroundImageUrl || ""}
       />
 
       {/* Wedding Details */}

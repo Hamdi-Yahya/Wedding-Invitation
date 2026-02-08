@@ -1,4 +1,4 @@
-// API route untuk upload gambar gallery
+// API route untuk upload gambar (gallery dan background)
 // Endpoint: POST /api/upload
 
 import { NextResponse } from "next/server";
@@ -7,11 +7,13 @@ import path from "path";
 
 /**
  * POST - Upload file gambar
+ * Mendukung upload untuk gallery dan background
  */
 export async function POST(request: Request) {
     try {
         const formData = await request.formData();
         const file = formData.get("file") as File;
+        const type = formData.get("type") as string || "gallery";
 
         if (!file) {
             return NextResponse.json(
@@ -46,10 +48,11 @@ export async function POST(request: Request) {
             // Folder sudah ada
         }
 
-        // Generate unique filename
+        // Generate unique filename berdasarkan tipe
         const timestamp = Date.now();
         const extension = file.name.split(".").pop();
-        const filename = `gallery_${timestamp}.${extension}`;
+        const prefix = type === "background" ? "background" : "gallery";
+        const filename = `${prefix}_${timestamp}.${extension}`;
         const filepath = path.join(uploadDir, filename);
 
         // Convert file to buffer and save
@@ -62,6 +65,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             success: true,
+            url: imageUrl,
             imageUrl,
             filename,
         });

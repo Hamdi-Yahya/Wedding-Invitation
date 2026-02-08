@@ -27,9 +27,9 @@ export default async function DashboardLayout({
                 {/* Sidebar */}
                 <Sidebar userName={session.user.name || "Admin"} />
 
-                {/* Main Content */}
-                <main className="flex-1 ml-64">
-                    <div className="p-8">{children}</div>
+                {/* Main Content - Responsif dengan padding untuk mobile header */}
+                <main className="flex-1 lg:ml-64 min-w-0">
+                    <div className="p-4 pt-20 lg:p-8 lg:pt-8">{children}</div>
                 </main>
             </div>
         </div>

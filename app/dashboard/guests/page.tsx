@@ -66,6 +66,10 @@ export default function GuestsPage() {
     const [eventSettings, setEventSettings] = useState<EventSettings | null>(null);
     const [themeSettings, setThemeSettings] = useState<ThemeSettings | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
+    const [selectedGuests, setSelectedGuests] = useState<number[]>([]);
+    const [showBulkPrintModal, setShowBulkPrintModal] = useState(false);
+    const [isBulkPrinting, setIsBulkPrinting] = useState(false);
+    const [bulkPrintProgress, setBulkPrintProgress] = useState(0);
 
     /**
      * Fetch daftar tamu dan settings dari API
@@ -278,6 +282,154 @@ export default function GuestsPage() {
     }
 
     /**
+     * Toggle seleksi tamu untuk bulk print
+     */
+    function toggleGuestSelection(guestId: number) {
+        setSelectedGuests(prev =>
+            prev.includes(guestId)
+                ? prev.filter(id => id !== guestId)
+                : [...prev, guestId]
+        );
+    }
+
+    /**
+     * Select/Deselect semua tamu yang terfilter
+     */
+    function toggleSelectAll() {
+        const filteredIds = filteredGuests.map(g => g.id);
+        const allSelected = filteredIds.every(id => selectedGuests.includes(id));
+        if (allSelected) {
+            setSelectedGuests(prev => prev.filter(id => !filteredIds.includes(id)));
+        } else {
+            setSelectedGuests(prev => [...new Set([...prev, ...filteredIds])]);
+        }
+    }
+
+    /**
+     * Buka modal bulk print
+     */
+    function openBulkPrintModal() {
+        if (selectedGuests.length === 0) {
+            alert("Pilih minimal 1 tamu untuk dicetak");
+            return;
+        }
+        setShowBulkPrintModal(true);
+    }
+
+    /**
+     * Tutup modal bulk print
+     */
+    function closeBulkPrintModal() {
+        setShowBulkPrintModal(false);
+        setBulkPrintProgress(0);
+    }
+
+    /**
+     * Generate PDF dengan banyak undangan (4 per halaman)
+     */
+    async function handleBulkPrint() {
+        if (!eventSettings || !themeSettings) return;
+
+        const guestsToPrint = guests.filter(g => selectedGuests.includes(g.id));
+        if (guestsToPrint.length === 0) return;
+
+        setIsBulkPrinting(true);
+        setBulkPrintProgress(0);
+
+        try {
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "mm",
+                format: "a4",
+            });
+
+            const cardsPerPage = 4;
+            const cardWidth = 95;
+            const cardHeight = 140;
+            const margin = 5;
+            const positions = [
+                { x: margin, y: margin },
+                { x: margin + cardWidth + margin, y: margin },
+                { x: margin, y: margin + cardHeight + margin },
+                { x: margin + cardWidth + margin, y: margin + cardHeight + margin },
+            ];
+
+            let cardIndex = 0;
+
+            for (const guest of guestsToPrint) {
+                // Create temporary card element
+                const cardDiv = document.createElement("div");
+                cardDiv.style.cssText = `
+                    width: 400px;
+                    min-height: 560px;
+                    background-color: #FFFAF5;
+                    font-family: 'Playfair Display', serif;
+                    position: fixed;
+                    left: -9999px;
+                    padding: 20px;
+                    box-sizing: border-box;
+                `;
+                cardDiv.innerHTML = `
+                    <div style="border: 2px solid ${themeSettings.primaryColor}20; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;"></div>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 30px 20px; text-align: center;">
+                        <div style="background-color: ${themeSettings.primaryColor}; color: white; padding: 8px 24px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 24px;">
+                            ${guest.category === "VIP" ? "VIP Guest" : "Special Guest"}: ${guest.name}
+                        </div>
+                        <p style="color: ${themeSettings.primaryColor}; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; font-family: sans-serif;">Together With Their Families</p>
+                        <h1 style="font-size: 42px; font-weight: 400; color: #2D2D2D; margin: 0 0 4px 0; line-height: 1.2;">${eventSettings.partner1Name}</h1>
+                        <p style="font-size: 28px; color: #999; margin: 0 0 4px 0; font-style: italic;">&</p>
+                        <h1 style="font-size: 42px; font-weight: 400; color: #2D2D2D; margin: 0 0 20px 0; line-height: 1.2;">${eventSettings.partner2Name}</h1>
+                        <p style="font-size: 13px; color: #666; margin-bottom: 24px; line-height: 1.6; font-family: sans-serif;">Joyfully invite you to share in their<br/>happiness as they unite in marriage</p>
+                        <h2 style="font-size: 18px; font-weight: 700; color: #2D2D2D; margin: 0 0 16px 0;">${new Date(eventSettings.eventDate).toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</h2>
+                        <div style="margin: 20px 0; padding: 16px; background: white; border-radius: 8px; display: inline-block; border: 1px solid ${themeSettings.primaryColor}20;">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(guest.qrCodeString)}" alt="QR" style="width: 80px; height: 80px;"/>
+                        </div>
+                        <p style="font-size: 12px; color: ${themeSettings.primaryColor}; font-weight: 600; font-family: monospace;">${guest.qrCodeString}</p>
+                    </div>
+                `;
+                document.body.appendChild(cardDiv);
+
+                // Wait for QR image to load
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // Convert to canvas
+                const canvas = await html2canvas(cardDiv, {
+                    scale: 2,
+                    backgroundColor: "#FFFAF5",
+                    useCORS: true,
+                });
+
+                document.body.removeChild(cardDiv);
+
+                // Add to PDF
+                const imgData = canvas.toDataURL("image/png");
+                const pos = positions[cardIndex % cardsPerPage];
+                pdf.addImage(imgData, "PNG", pos.x, pos.y, cardWidth, cardHeight);
+
+                cardIndex++;
+
+                // Add new page if needed
+                if (cardIndex % cardsPerPage === 0 && cardIndex < guestsToPrint.length) {
+                    pdf.addPage();
+                }
+
+                // Update progress
+                setBulkPrintProgress(Math.round((cardIndex / guestsToPrint.length) * 100));
+            }
+
+            pdf.save(`undangan-bulk-${new Date().toISOString().split("T")[0]}.pdf`);
+            closeBulkPrintModal();
+            setSelectedGuests([]);
+        } catch (error) {
+            console.error("Error generating bulk PDF:", error);
+            alert("Gagal membuat PDF. Silakan coba lagi.");
+        } finally {
+            setIsBulkPrinting(false);
+            setBulkPrintProgress(0);
+        }
+    }
+
+    /**
      * Filter tamu berdasarkan pencarian dan kategori
      */
     const filteredGuests = guests.filter((guest) => {
@@ -320,32 +472,35 @@ export default function GuestsPage() {
     return (
         <div>
             {/* Page Header */}
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#5C4A3D]">Daftar Tamu</h1>
                     <p className="text-[#A89080] mt-1">
                         Total: {guests.length} tamu undangan
                     </p>
                 </div>
-                <button
-                    onClick={openAddModal}
-                    className="px-4 py-2 bg-[#E91E8C] text-white rounded-lg hover:bg-[#D91A7C] transition-colors flex items-center gap-2"
-                >
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                <div className="flex gap-2">
+                    {selectedGuests.length > 0 && (
+                        <button
+                            onClick={openBulkPrintModal}
+                            className="px-4 py-2 bg-[#5C4A3D] text-white rounded-lg hover:bg-[#4A3A2F] transition-colors flex items-center gap-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            Cetak ({selectedGuests.length})
+                        </button>
+                    )}
+                    <button
+                        onClick={openAddModal}
+                        className="px-4 py-2 bg-[#E91E8C] text-white rounded-lg hover:bg-[#D91A7C] transition-colors flex items-center gap-2"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                        />
-                    </svg>
-                    Tambah Tamu
-                </button>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah Tamu
+                    </button>
+                </div>
             </div>
 
             {/* Filters */}
@@ -376,22 +531,30 @@ export default function GuestsPage() {
                     <table className="w-full">
                         <thead className="bg-[#F5E6E0]">
                             <tr>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-[#5C4A3D]">
+                                <th className="px-4 py-4 text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={filteredGuests.length > 0 && filteredGuests.every(g => selectedGuests.includes(g.id))}
+                                        onChange={toggleSelectAll}
+                                        className="w-4 h-4 rounded border-gray-300 text-[#E91E8C] focus:ring-[#E91E8C]"
+                                    />
+                                </th>
+                                <th className="px-4 py-4 text-left text-sm font-medium text-[#5C4A3D]">
                                     Nama
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-[#5C4A3D]">
+                                <th className="px-4 py-4 text-left text-sm font-medium text-[#5C4A3D] hidden md:table-cell">
                                     No. HP
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-[#5C4A3D]">
+                                <th className="px-4 py-4 text-left text-sm font-medium text-[#5C4A3D] hidden sm:table-cell">
                                     Kategori
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-[#5C4A3D]">
+                                <th className="px-4 py-4 text-left text-sm font-medium text-[#5C4A3D] hidden lg:table-cell">
                                     RSVP
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-medium text-[#5C4A3D]">
+                                <th className="px-4 py-4 text-left text-sm font-medium text-[#5C4A3D] hidden lg:table-cell">
                                     Check-in
                                 </th>
-                                <th className="px-6 py-4 text-right text-sm font-medium text-[#5C4A3D]">
+                                <th className="px-4 py-4 text-right text-sm font-medium text-[#5C4A3D]">
                                     Aksi
                                 </th>
                             </tr>
@@ -400,7 +563,7 @@ export default function GuestsPage() {
                             {filteredGuests.length === 0 ? (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-[#A89080]"
                                     >
                                         Tidak ada tamu yang ditemukan
@@ -409,7 +572,15 @@ export default function GuestsPage() {
                             ) : (
                                 filteredGuests.map((guest) => (
                                     <tr key={guest.id} className="hover:bg-[#FAF7F5]">
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4 text-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedGuests.includes(guest.id)}
+                                                onChange={() => toggleGuestSelection(guest.id)}
+                                                className="w-4 h-4 rounded border-gray-300 text-[#E91E8C] focus:ring-[#E91E8C]"
+                                            />
+                                        </td>
+                                        <td className="px-4 py-4">
                                             <div>
                                                 <p className="font-medium text-[#5C4A3D]">
                                                     {guest.name}
@@ -419,10 +590,10 @@ export default function GuestsPage() {
                                                 </p>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-[#5C4A3D]">
+                                        <td className="px-4 py-4 text-[#5C4A3D] hidden md:table-cell">
                                             {guest.phoneNumber || "-"}
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4 hidden sm:table-cell">
                                             <span
                                                 className={`px-2 py-1 rounded-full text-xs font-medium ${guest.category === "VIP"
                                                     ? "bg-[#E91E8C] text-white"
@@ -432,10 +603,10 @@ export default function GuestsPage() {
                                                 {guest.category}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4 hidden lg:table-cell">
                                             <StatusBadge status={guest.rsvpStatus} />
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4 hidden lg:table-cell">
                                             {guest.checkInTime ? (
                                                 <span className="text-green-600 text-sm">✓ Hadir</span>
                                             ) : (
@@ -686,6 +857,71 @@ export default function GuestsPage() {
                         >
                             Tutup
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Print Modal */}
+            {showBulkPrintModal && eventSettings && themeSettings && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+                        <div className="text-center mb-6">
+                            <div className="w-16 h-16 bg-[#E91E8C]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-[#E91E8C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xl font-semibold text-[#5C4A3D] mb-2">
+                                Cetak Undangan Massal
+                            </h2>
+                            <p className="text-[#A89080] text-sm">
+                                {selectedGuests.length} undangan akan dicetak dalam format PDF (4 undangan per halaman A4)
+                            </p>
+                        </div>
+
+                        {isBulkPrinting && (
+                            <div className="mb-6">
+                                <div className="flex justify-between text-sm text-[#5C4A3D] mb-2">
+                                    <span>Memproses...</span>
+                                    <span>{bulkPrintProgress}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div
+                                        className="bg-[#E91E8C] h-3 rounded-full transition-all duration-300"
+                                        style={{ width: `${bulkPrintProgress}%` }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={closeBulkPrintModal}
+                                disabled={isBulkPrinting}
+                                className="flex-1 px-4 py-3 border border-[#E5D5C5] text-[#5C4A3D] rounded-lg hover:bg-[#F5E6E0] transition-colors disabled:opacity-50"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleBulkPrint}
+                                disabled={isBulkPrinting}
+                                className="flex-1 px-4 py-3 bg-[#E91E8C] text-white rounded-lg hover:bg-[#D91A7C] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {isBulkPrinting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                                        Memproses...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Cetak PDF
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

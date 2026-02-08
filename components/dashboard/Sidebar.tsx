@@ -1,8 +1,9 @@
 // Sidebar Component
-// Navigasi samping untuk dashboard admin
+// Navigasi samping untuk dashboard admin dengan responsive hamburger menu
 
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -87,10 +88,32 @@ const menuItems = [
 
 /**
  * Sidebar Component
- * Komponen navigasi samping dengan menu dashboard
+ * Komponen navigasi samping dengan menu dashboard dan responsive hamburger
  */
 export default function Sidebar({ userName, partnerNames }: SidebarProps) {
     const pathname = usePathname();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    /**
+     * Close mobile menu saat route berubah
+     */
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
+
+    /**
+     * Prevent scroll saat mobile menu terbuka
+     */
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [isMobileMenuOpen]);
 
     /**
      * Handle logout
@@ -109,63 +132,115 @@ export default function Sidebar({ userName, partnerNames }: SidebarProps) {
         return pathname.startsWith(href);
     }
 
+    /**
+     * Toggle mobile menu
+     */
+    function toggleMobileMenu() {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    }
+
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 flex flex-col">
-            {/* Logo/Brand Section */}
-            <div className="px-6 py-6 border-b border-gray-100">
+        <>
+            {/* Mobile Header dengan Hamburger */}
+            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center overflow-hidden">
-                        <svg className="w-6 h-6 text-[#E91E8C]" fill="currentColor" viewBox="0 0 24 24">
+                    <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">
+                        <svg className="w-5 h-5 text-[#E91E8C]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                         </svg>
                     </div>
-                    <div>
-                        <p className="font-semibold text-gray-800 text-sm">
-                            Wedding Invitation
-                        </p>
-                        <p className="text-xs text-gray-400">Dashboard Admin</p>
-                    </div>
+                    <span className="font-semibold text-gray-800 text-sm">Wedding Invitation</span>
                 </div>
-            </div>
-
-            {/* Navigation Menu */}
-            <nav className="flex-1 px-4 py-6">
-                <ul className="space-y-1">
-                    {menuItems.map((item) => {
-                        const active = isActive(item.href);
-                        return (
-                            <li key={item.name}>
-                                <Link
-                                    href={item.href}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
-                                        ? "bg-[#E91E8C] text-white"
-                                        : "text-gray-600 hover:bg-gray-50"
-                                        }`}
-                                >
-                                    <span className={active ? "text-white" : "text-gray-400"}>
-                                        {item.icon}
-                                    </span>
-                                    <span className="font-medium text-sm">{item.name}</span>
-                                </Link>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </nav>
-
-            {/* Logout Button */}
-            <div className="px-4 py-6 border-t border-gray-100">
                 <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all"
+                    onClick={toggleMobileMenu}
+                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label="Toggle menu"
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span className="font-medium text-sm">Log Out</span>
+                    {isMobileMenuOpen ? (
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    )}
                 </button>
             </div>
-        </aside>
+
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div
+                    className="lg:hidden fixed inset-0 bg-black/50 z-40"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Sidebar - Desktop selalu visible, Mobile slide-in */}
+            <aside
+                className={`
+                    fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 flex flex-col z-50
+                    transform transition-transform duration-300 ease-in-out
+                    lg:translate-x-0
+                    ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+                `}
+            >
+                {/* Logo/Brand Section */}
+                <div className="px-6 py-6 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                        {/* Avatar */}
+                        <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center overflow-hidden">
+                            <svg className="w-6 h-6 text-[#E91E8C]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="font-semibold text-gray-800 text-sm">
+                                Wedding Invitation
+                            </p>
+                            <p className="text-xs text-gray-400">Dashboard Admin</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Navigation Menu */}
+                <nav className="flex-1 px-4 py-6 overflow-y-auto">
+                    <ul className="space-y-1">
+                        {menuItems.map((item) => {
+                            const active = isActive(item.href);
+                            return (
+                                <li key={item.name}>
+                                    <Link
+                                        href={item.href}
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
+                                            ? "bg-[#E91E8C] text-white"
+                                            : "text-gray-600 hover:bg-gray-50"
+                                            }`}
+                                    >
+                                        <span className={active ? "text-white" : "text-gray-400"}>
+                                            {item.icon}
+                                        </span>
+                                        <span className="font-medium text-sm">{item.name}</span>
+                                    </Link>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </nav>
+
+                {/* Logout Button */}
+                <div className="px-4 py-6 border-t border-gray-100">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span className="font-medium text-sm">Log Out</span>
+                    </button>
+                </div>
+            </aside>
+        </>
     );
 }

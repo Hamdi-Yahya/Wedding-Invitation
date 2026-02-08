@@ -16,7 +16,13 @@ interface HeroSectionProps {
     eventDate: Date;
     primaryColor: string;
     secondaryColor: string;
+    backgroundImageUrl?: string;
 }
+
+/**
+ * Default background image URL
+ */
+const DEFAULT_BACKGROUND_URL = "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=1600";
 
 /**
  * HeroSection Component
@@ -29,6 +35,7 @@ export default function HeroSection({
     tagline,
     eventDate,
     primaryColor,
+    backgroundImageUrl,
 }: HeroSectionProps) {
     const [countdown, setCountdown] = useState({
         days: 0,
@@ -71,6 +78,16 @@ export default function HeroSection({
         year: "numeric",
     });
 
+    /**
+     * Get background image URL (custom or default)
+     */
+    function getBackgroundUrl(): string {
+        if (backgroundImageUrl && backgroundImageUrl.trim() !== "") {
+            return backgroundImageUrl;
+        }
+        return DEFAULT_BACKGROUND_URL;
+    }
+
     return (
         <section className="relative">
             {/* Navigation Header */}
@@ -98,7 +115,7 @@ export default function HeroSection({
                 <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=1600')",
+                        backgroundImage: `url('${getBackgroundUrl()}')`,
                     }}
                 >
                     <div className="absolute inset-0 bg-black/20"></div>

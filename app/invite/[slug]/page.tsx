@@ -140,6 +140,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
                 eventDate={eventSettings.eventDate}
                 primaryColor={primaryColor}
                 secondaryColor={themeSettings.secondaryColor}
+                backgroundImageUrl={themeSettings.backgroundImageUrl || ""}
             />
 
             {/* Wedding Details */}
