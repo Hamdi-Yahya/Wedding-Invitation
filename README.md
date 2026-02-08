@@ -40,7 +40,8 @@ Pastikan file `.env` sudah ada. Jika belum, buat file baru bernama `.env` dan is
 DATABASE_URL="mysql://root:@localhost:3306/wedding_invitation"
 
 # NextAuth Configuration
-NEXTAUTH_SECRET="rahasia-dapur-pengantin-123"
+# Ganti dengan random string yang panjang dan unik
+NEXTAUTH_SECRET="GANTI_DENGAN_STRING_ACAK_YANG_AMAN"
 NEXTAUTH_URL="http://localhost:3000"
 ```
 
