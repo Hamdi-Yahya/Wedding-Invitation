@@ -81,11 +81,30 @@ Buka browser dan akses **http://localhost:3000**
 
 ## ⚠️ Masalah Umum (Troubleshooting)
 
-Jika Anda mengalami error saat menjalankan `npm run dev`, lakukan langkah **Reset Total** berikut:
+### Error: Turbopack "failed to create whole tree"
+
+Jika muncul error seperti ini:
+```
+FATAL: An unexpected Turbopack error occurred.
+Error [TurbopackInternalError]: failed to create whole tree
+```
+
+**Solusi:**
+1. **Stop Server**: Tekan `Ctrl + C` di terminal.
+2. **Hapus folder `.next`**:
+   - **Windows (PowerShell)**: `Remove-Item -Recurse -Force .next`
+   - **Mac/Linux**: `rm -rf .next`
+3. **Jalankan ulang**: `npm run dev`
+
+---
+
+### Error Umum Lainnya
+
+Jika masih error, lakukan **Reset Total**:
 
 1.  **Stop Server**: Tekan `Ctrl + C` di terminal.
 2.  **Hapus Cache**: Hapus folder `.next` (klik kanan -> delete).
-3.  **Hapus Modules** (Jika perlu): Hapus folder `node_modules`.
+3.  **Hapus Modules**: Hapus folder `node_modules`.
 4.  **Install Ulang**: Jalankan `npm install`.
 5.  **Jalankan Lagi**: `npm run dev`.
 
