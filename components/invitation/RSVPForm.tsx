@@ -35,6 +35,11 @@ export default function RSVPForm({
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) {
         const { name, value } = e.target;
+        if (name === "phoneNumber") {
+            const numericValue = value.replace(/[^0-9]/g, "");
+            setFormData((prev) => ({ ...prev, [name]: numericValue }));
+            return;
+        }
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
@@ -155,6 +160,8 @@ export default function RSVPForm({
                                 name="phoneNumber"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                                 placeholder="08xxxxxxxxxx"
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#E91E8C] focus:border-transparent outline-none"
                             />

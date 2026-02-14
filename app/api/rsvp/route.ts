@@ -1,19 +1,11 @@
-// API Route untuk RSVP
-// Endpoint untuk submit RSVP dari halaman undangan publik
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateSlug, generateQRString } from "@/lib/utils";
 
-/**
- * POST /api/rsvp
- * Submit RSVP dari tamu (mendukung mode publik dan personalized)
- */
 export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Validasi input
         if (!body.slug && (!body.name || !body.name.trim())) {
             return NextResponse.json(
                 { error: "Nama wajib diisi" },
@@ -30,7 +22,6 @@ export async function POST(request: Request) {
 
         let guest;
 
-        // Jika slug dikirim, cari tamu berdasarkan slug (mode personalized dari link undangan)
         if (body.slug) {
             const existingGuest = await prisma.guest.findUnique({
                 where: { slug: body.slug },
@@ -43,7 +34,6 @@ export async function POST(request: Request) {
                 );
             }
 
-            // Update RSVP tamu yang sudah ada
             guest = await prisma.guest.update({
                 where: { id: existingGuest.id },
                 data: {
@@ -53,14 +43,12 @@ export async function POST(request: Request) {
                 },
             });
         } else {
-            // Mode publik: cari atau buat tamu baru berdasarkan nama
             const slug = generateSlug(body.name);
             const existingGuest = await prisma.guest.findUnique({
                 where: { slug },
             });
 
             if (existingGuest) {
-                // Update RSVP tamu yang sudah ada
                 guest = await prisma.guest.update({
                     where: { id: existingGuest.id },
                     data: {
@@ -70,7 +58,6 @@ export async function POST(request: Request) {
                     },
                 });
             } else {
-                // Buat tamu baru
                 const qrCodeString = generateQRString();
                 guest = await prisma.guest.create({
                     data: {

@@ -1,14 +1,6 @@
-// Dashboard Overview Page
-// Menampilkan statistik dan ringkasan data
-
 import { prisma } from "@/lib/prisma";
 
-/**
- * Dashboard Page Component
- * Halaman utama dashboard dengan statistik tamu dan RSVP
- */
 export default async function DashboardPage() {
-    // Fetch statistik dari database
     let stats = {
         totalGuests: 0,
         vipGuests: 0,
@@ -22,10 +14,8 @@ export default async function DashboardPage() {
     };
 
     try {
-        // Total tamu
         stats.totalGuests = await prisma.guest.count();
 
-        // Kategori tamu
         stats.vipGuests = await prisma.guest.count({
             where: { category: "VIP" },
         });
@@ -33,7 +23,6 @@ export default async function DashboardPage() {
             where: { category: "Regular" },
         });
 
-        // Status RSVP
         stats.rsvpComing = await prisma.guest.count({
             where: { rsvpStatus: "Coming" },
         });
@@ -44,12 +33,10 @@ export default async function DashboardPage() {
             where: { rsvpStatus: "Pending" },
         });
 
-        // Check-in
         stats.checkedIn = await prisma.guest.count({
             where: { checkInTime: { not: null } },
         });
 
-        // Ucapan
         stats.totalWishes = await prisma.wish.count();
         stats.approvedWishes = await prisma.wish.count({
             where: { isApproved: true },
@@ -60,7 +47,6 @@ export default async function DashboardPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-semibold text-[#5C4A3D]">Dashboard</h1>
                 <p className="text-[#A89080] mt-1">
@@ -68,9 +54,7 @@ export default async function DashboardPage() {
                 </p>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {/* Total Tamu */}
                 <StatCard
                     title="Total Tamu"
                     value={stats.totalGuests}
@@ -92,7 +76,6 @@ export default async function DashboardPage() {
                     color="bg-[#E91E8C]"
                 />
 
-                {/* RSVP Coming */}
                 <StatCard
                     title="Konfirmasi Hadir"
                     value={stats.rsvpComing}
@@ -114,7 +97,6 @@ export default async function DashboardPage() {
                     color="bg-green-500"
                 />
 
-                {/* Checked In */}
                 <StatCard
                     title="Sudah Check-in"
                     value={stats.checkedIn}
@@ -136,7 +118,6 @@ export default async function DashboardPage() {
                     color="bg-blue-500"
                 />
 
-                {/* Ucapan */}
                 <StatCard
                     title="Ucapan"
                     value={stats.approvedWishes}
@@ -160,9 +141,7 @@ export default async function DashboardPage() {
                 />
             </div>
 
-            {/* RSVP Status Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* RSVP Progress Card */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">
                         Status RSVP
@@ -189,7 +168,6 @@ export default async function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Guest Category Card */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">
                         Kategori Tamu
@@ -214,10 +192,6 @@ export default async function DashboardPage() {
     );
 }
 
-/**
- * StatCard Component
- * Card untuk menampilkan statistik dengan icon
- */
 interface StatCardProps {
     title: string;
     value: number;
@@ -247,10 +221,6 @@ function StatCard({ title, value, subValue, icon, color }: StatCardProps) {
     );
 }
 
-/**
- * ProgressBar Component
- * Bar progress untuk menampilkan rasio
- */
 interface ProgressBarProps {
     label: string;
     value: number;

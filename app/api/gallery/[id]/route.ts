@@ -1,12 +1,6 @@
-// API route untuk gallery image by ID
-// Endpoint: PUT/DELETE /api/gallery/[id]
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * PUT - Update gallery image
- */
 export async function PUT(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -35,9 +29,6 @@ export async function PUT(
     }
 }
 
-/**
- * DELETE - Hapus gallery image
- */
 export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }

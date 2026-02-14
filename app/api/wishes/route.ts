@@ -1,20 +1,12 @@
-// API Route untuk Wishes
-// Endpoint untuk submit dan mengambil ucapan
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateSlug, generateQRString } from "@/lib/utils";
 
-/**
- * GET /api/wishes
- * Mengambil daftar ucapan yang sudah disetujui
- */
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const all = searchParams.get("all");
 
-        // Jika parameter all=true, ambil semua wishes (untuk admin)
         const whereClause = all === "true" ? {} : { isApproved: true };
 
         const wishes = await prisma.wish.findMany({
@@ -37,15 +29,10 @@ export async function GET(request: Request) {
     }
 }
 
-/**
- * POST /api/wishes
- * Submit ucapan baru (mode publik - tamu input nama sendiri)
- */
 export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Validasi input
         if (!body.name || !body.name.trim()) {
             return NextResponse.json(
                 { error: "Nama wajib diisi" },
@@ -60,17 +47,14 @@ export async function POST(request: Request) {
             );
         }
 
-        // Generate slug dan QR code
         const slug = generateSlug(body.name);
         const qrCodeString = generateQRString();
 
-        // Cari atau buat tamu
         let guest = await prisma.guest.findUnique({
             where: { slug },
         });
 
         if (!guest) {
-            // Buat tamu baru jika belum ada
             guest = await prisma.guest.create({
                 data: {
                     name: body.name.trim(),
@@ -84,12 +68,11 @@ export async function POST(request: Request) {
             });
         }
 
-        // Buat wish baru
         const wish = await prisma.wish.create({
             data: {
                 guestId: guest.id,
                 message: body.message.trim(),
-                isApproved: false, // Default: perlu approval admin
+                isApproved: false,
             },
             include: {
                 guest: {

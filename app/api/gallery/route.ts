@@ -1,12 +1,6 @@
-// API route untuk gallery images
-// Endpoint: GET/POST /api/gallery
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * GET - Ambil semua gallery images
- */
 export async function GET() {
     try {
         const images = await prisma.galleryImage.findMany({
@@ -24,14 +18,10 @@ export async function GET() {
     }
 }
 
-/**
- * POST - Tambah gallery image baru
- */
 export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Dapatkan sortOrder tertinggi
         const maxOrder = await prisma.galleryImage.findFirst({
             orderBy: { sortOrder: "desc" },
             select: { sortOrder: true },

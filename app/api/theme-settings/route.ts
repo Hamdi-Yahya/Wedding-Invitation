@@ -1,14 +1,6 @@
-// API Route untuk ThemeSettings
-// GET: Ambil data theme settings
-// PUT: Update data theme settings
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * GET /api/theme-settings
- * Mengambil data theme settings (ID = 1)
- */
 export async function GET() {
     try {
         const themeSettings = await prisma.themeSettings.findFirst({
@@ -29,10 +21,6 @@ export async function GET() {
     }
 }
 
-/**
- * PUT /api/theme-settings
- * Update data theme settings
- */
 export async function PUT(request: Request) {
     try {
         const body = await request.json();

@@ -1,14 +1,6 @@
-// API Route untuk single Wish
-// PUT: Update approval status
-// DELETE: Hapus ucapan
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * PUT /api/wishes/[id]
- * Update status approval ucapan
- */
 export async function PUT(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -34,10 +26,6 @@ export async function PUT(
     }
 }
 
-/**
- * DELETE /api/wishes/[id]
- * Hapus ucapan
- */
 export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }

@@ -1,20 +1,12 @@
-// API route untuk wedding details
-// Endpoint: GET/PUT /api/wedding-details
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * GET - Ambil wedding details
- */
 export async function GET() {
     try {
-        // Cari atau buat default wedding details
         let details = await prisma.weddingDetails.findFirst({
             where: { id: 1 },
         });
 
-        // Jika belum ada, buat default
         if (!details) {
             details = await prisma.weddingDetails.create({
                 data: {
@@ -44,9 +36,6 @@ export async function GET() {
     }
 }
 
-/**
- * PUT - Update wedding details
- */
 export async function PUT(request: Request) {
     try {
         const body = await request.json();

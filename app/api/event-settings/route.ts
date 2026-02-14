@@ -1,14 +1,6 @@
-// API Route untuk EventSettings
-// GET: Ambil data event settings
-// PUT: Update data event settings
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * GET /api/event-settings
- * Mengambil data event settings (ID = 1)
- */
 export async function GET() {
     try {
         const eventSettings = await prisma.eventSettings.findFirst({
@@ -29,10 +21,6 @@ export async function GET() {
     }
 }
 
-/**
- * PUT /api/event-settings
- * Update data event settings
- */
 export async function PUT(request: Request) {
     try {
         const body = await request.json();

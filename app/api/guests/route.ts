@@ -1,15 +1,7 @@
-// API Route untuk Guests
-// GET: Ambil semua tamu
-// POST: Tambah tamu baru dengan auto-generate QR dan slug
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateSlug, generateQRString } from "@/lib/utils";
 
-/**
- * GET /api/guests
- * Mengambil semua data tamu
- */
 export async function GET() {
     try {
         const guests = await prisma.guest.findMany({
@@ -26,15 +18,10 @@ export async function GET() {
     }
 }
 
-/**
- * POST /api/guests
- * Membuat tamu baru dengan auto-generate QR dan slug
- */
 export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Validasi input
         if (!body.name) {
             return NextResponse.json(
                 { error: "Nama tamu wajib diisi" },
@@ -42,7 +29,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Generate unique slug dan QR string
         const slug = generateSlug(body.name);
         const qrCodeString = generateQRString();
 

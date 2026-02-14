@@ -1,15 +1,6 @@
-// API Route untuk single Guest
-// GET: Ambil data tamu by ID
-// PUT: Update data tamu
-// DELETE: Hapus tamu
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * GET /api/guests/[id]
- * Mengambil data tamu berdasarkan ID
- */
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -35,10 +26,6 @@ export async function GET(
     }
 }
 
-/**
- * PUT /api/guests/[id]
- * Update data tamu
- */
 export async function PUT(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -66,10 +53,6 @@ export async function PUT(
     }
 }
 
-/**
- * DELETE /api/guests/[id]
- * Hapus tamu
- */
 export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }

@@ -1,15 +1,8 @@
-// API route untuk approve all wishes
-// Endpoint: PUT /api/wishes/approve-all
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * PUT - Approve semua wishes sekaligus
- */
 export async function PUT() {
     try {
-        // Update semua wishes yang belum di-approve
         const result = await prisma.wish.updateMany({
             where: { isApproved: false },
             data: { isApproved: true },

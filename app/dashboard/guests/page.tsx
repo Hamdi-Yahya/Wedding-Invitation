@@ -1,5 +1,3 @@
-// Guests Management Page
-// CRUD untuk mengelola daftar tamu undangan dengan fitur download undangan
 
 "use client";
 
@@ -8,9 +6,6 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import InvitationCard from "@/components/invitation/InvitationCard";
 
-/**
- * Interface untuk data Guest
- */
 interface Guest {
     id: number;
     name: string;
@@ -24,9 +19,6 @@ interface Guest {
     giftType: string | null;
 }
 
-/**
- * Interface untuk Event Settings
- */
 interface EventSettings {
     partner1Name: string;
     partner2Name: string;
@@ -37,17 +29,10 @@ interface EventSettings {
     venueAddress: string;
 }
 
-/**
- * Interface untuk Theme Settings
- */
 interface ThemeSettings {
     primaryColor: string;
 }
 
-/**
- * GuestsPage Component
- * Halaman CRUD untuk manajemen tamu undangan
- */
 export default function GuestsPage() {
     const [guests, setGuests] = useState<Guest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -71,18 +56,12 @@ export default function GuestsPage() {
     const [isBulkPrinting, setIsBulkPrinting] = useState(false);
     const [bulkPrintProgress, setBulkPrintProgress] = useState(0);
 
-    /**
-     * Fetch daftar tamu dan settings dari API
-     */
     useEffect(() => {
         fetchGuests();
         fetchEventSettings();
         fetchThemeSettings();
     }, []);
 
-    /**
-     * Fungsi untuk fetch daftar tamu
-     */
     async function fetchGuests() {
         try {
             const response = await fetch("/api/guests");
@@ -97,9 +76,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Fungsi untuk fetch event settings
-     */
     async function fetchEventSettings() {
         try {
             const response = await fetch("/api/event-settings");
@@ -112,9 +88,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Fungsi untuk fetch theme settings
-     */
     async function fetchThemeSettings() {
         try {
             const response = await fetch("/api/theme-settings");
@@ -127,9 +100,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Handle perubahan input form
-     */
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) {
@@ -137,9 +107,6 @@ export default function GuestsPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    /**
-     * Handle submit form (Create/Update)
-     */
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -164,9 +131,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Handle delete tamu
-     */
     async function handleDelete(id: number) {
         if (!confirm("Apakah Anda yakin ingin menghapus tamu ini?")) return;
 
@@ -180,9 +144,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Buka modal untuk edit tamu
-     */
     function openEditModal(guest: Guest) {
         setEditingGuest(guest);
         setFormData({
@@ -193,50 +154,34 @@ export default function GuestsPage() {
         setShowModal(true);
     }
 
-    /**
-     * Buka modal untuk tambah tamu baru
-     */
     function openAddModal() {
         setEditingGuest(null);
         setFormData({ name: "", phoneNumber: "", category: "Regular" });
         setShowModal(true);
     }
 
-    /**
-     * Tutup modal
-     */
     function closeModal() {
         setShowModal(false);
         setEditingGuest(null);
         setFormData({ name: "", phoneNumber: "", category: "Regular" });
     }
 
-    /**
-     * Buka modal download undangan
-     */
     function openDownloadModal(guest: Guest) {
         setDownloadingGuest(guest);
         setShowDownloadModal(true);
     }
 
-    /**
-     * Tutup modal download
-     */
     function closeDownloadModal() {
         setShowDownloadModal(false);
         setDownloadingGuest(null);
     }
 
-    /**
-     * Download undangan sebagai gambar atau PDF
-     */
     async function handleDownload(format: "png" | "jpg" | "pdf") {
         if (!cardRef.current || !downloadingGuest) return;
 
         setIsDownloading(true);
 
         try {
-            // Generate canvas dari HTML
             const canvas = await html2canvas(cardRef.current, {
                 scale: 2,
                 backgroundColor: "#FFFAF5",
@@ -246,7 +191,6 @@ export default function GuestsPage() {
             const fileName = `undangan-${downloadingGuest.name.replace(/\s+/g, "-").toLowerCase()}`;
 
             if (format === "pdf") {
-                // Generate PDF
                 const imgData = canvas.toDataURL("image/png");
                 const pdf = new jsPDF({
                     orientation: "portrait",
@@ -256,7 +200,6 @@ export default function GuestsPage() {
                 pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
                 pdf.save(`${fileName}.pdf`);
             } else {
-                // Generate image
                 const link = document.createElement("a");
                 link.download = `${fileName}.${format}`;
                 link.href = canvas.toDataURL(`image/${format === "jpg" ? "jpeg" : "png"}`);
@@ -272,18 +215,12 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Copy link undangan ke clipboard
-     */
     function copyInvitationLink(slug: string) {
         const link = `${window.location.origin}/invite/${slug}`;
         navigator.clipboard.writeText(link);
         alert("Link undangan berhasil disalin!");
     }
 
-    /**
-     * Toggle seleksi tamu untuk bulk print
-     */
     function toggleGuestSelection(guestId: number) {
         setSelectedGuests(prev =>
             prev.includes(guestId)
@@ -292,9 +229,6 @@ export default function GuestsPage() {
         );
     }
 
-    /**
-     * Select/Deselect semua tamu yang terfilter
-     */
     function toggleSelectAll() {
         const filteredIds = filteredGuests.map(g => g.id);
         const allSelected = filteredIds.every(id => selectedGuests.includes(id));
@@ -305,9 +239,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Buka modal bulk print
-     */
     function openBulkPrintModal() {
         if (selectedGuests.length === 0) {
             alert("Pilih minimal 1 tamu untuk dicetak");
@@ -316,17 +247,11 @@ export default function GuestsPage() {
         setShowBulkPrintModal(true);
     }
 
-    /**
-     * Tutup modal bulk print
-     */
     function closeBulkPrintModal() {
         setShowBulkPrintModal(false);
         setBulkPrintProgress(0);
     }
 
-    /**
-     * Generate PDF dengan banyak undangan (4 per halaman)
-     */
     async function handleBulkPrint() {
         if (!eventSettings || !themeSettings) return;
 
@@ -357,7 +282,6 @@ export default function GuestsPage() {
             let cardIndex = 0;
 
             for (const guest of guestsToPrint) {
-                // Create temporary card element
                 const cardDiv = document.createElement("div");
                 cardDiv.style.cssText = `
                     width: 400px;
@@ -389,10 +313,8 @@ export default function GuestsPage() {
                 `;
                 document.body.appendChild(cardDiv);
 
-                // Wait for QR image to load
                 await new Promise(resolve => setTimeout(resolve, 300));
 
-                // Convert to canvas
                 const canvas = await html2canvas(cardDiv, {
                     scale: 2,
                     backgroundColor: "#FFFAF5",
@@ -401,19 +323,16 @@ export default function GuestsPage() {
 
                 document.body.removeChild(cardDiv);
 
-                // Add to PDF
                 const imgData = canvas.toDataURL("image/png");
                 const pos = positions[cardIndex % cardsPerPage];
                 pdf.addImage(imgData, "PNG", pos.x, pos.y, cardWidth, cardHeight);
 
                 cardIndex++;
 
-                // Add new page if needed
                 if (cardIndex % cardsPerPage === 0 && cardIndex < guestsToPrint.length) {
                     pdf.addPage();
                 }
 
-                // Update progress
                 setBulkPrintProgress(Math.round((cardIndex / guestsToPrint.length) * 100));
             }
 
@@ -429,9 +348,6 @@ export default function GuestsPage() {
         }
     }
 
-    /**
-     * Filter tamu berdasarkan pencarian dan kategori
-     */
     const filteredGuests = guests.filter((guest) => {
         const matchesSearch = guest.name
             .toLowerCase()
@@ -441,9 +357,6 @@ export default function GuestsPage() {
         return matchesSearch && matchesCategory;
     });
 
-    /**
-     * Render status badge
-     */
     function StatusBadge({ status }: { status: string }) {
         const colors: Record<string, string> = {
             Pending: "bg-yellow-100 text-yellow-800",
@@ -471,7 +384,6 @@ export default function GuestsPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#5C4A3D]">Daftar Tamu</h1>
@@ -503,7 +415,6 @@ export default function GuestsPage() {
                 </div>
             </div>
 
-            {/* Filters */}
             <div className="bg-white rounded-xl p-4 shadow-sm mb-6 flex flex-wrap gap-4">
                 <div className="flex-1 min-w-[200px]">
                     <input
@@ -525,7 +436,6 @@ export default function GuestsPage() {
                 </select>
             </div>
 
-            {/* Guests Table */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
@@ -615,7 +525,6 @@ export default function GuestsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
-                                                {/* Copy Link Button */}
                                                 <button
                                                     onClick={() => copyInvitationLink(guest.slug)}
                                                     className="p-2 text-[#8B7355] hover:bg-[#F5E6E0] rounded-lg transition-colors"
@@ -635,7 +544,6 @@ export default function GuestsPage() {
                                                         />
                                                     </svg>
                                                 </button>
-                                                {/* Download Button */}
                                                 <button
                                                     onClick={() => openDownloadModal(guest)}
                                                     className="p-2 text-[#E91E8C] hover:bg-[#F5E6E0] rounded-lg transition-colors"
@@ -655,7 +563,6 @@ export default function GuestsPage() {
                                                         />
                                                     </svg>
                                                 </button>
-                                                {/* Edit Button */}
                                                 <button
                                                     onClick={() => openEditModal(guest)}
                                                     className="p-2 text-[#8B7355] hover:bg-[#F5E6E0] rounded-lg transition-colors"
@@ -675,7 +582,6 @@ export default function GuestsPage() {
                                                         />
                                                     </svg>
                                                 </button>
-                                                {/* Delete Button */}
                                                 <button
                                                     onClick={() => handleDelete(guest.id)}
                                                     className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -705,7 +611,6 @@ export default function GuestsPage() {
                 </div>
             </div>
 
-            {/* Add/Edit Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
@@ -776,7 +681,6 @@ export default function GuestsPage() {
                 </div>
             )}
 
-            {/* Download Modal */}
             {showDownloadModal && downloadingGuest && eventSettings && themeSettings && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
                     <div className="bg-white rounded-xl p-6 w-full max-w-2xl mx-4">
@@ -786,7 +690,6 @@ export default function GuestsPage() {
                             </h2>
                         </div>
 
-                        {/* Preview Card */}
                         <div className="flex justify-center mb-6 bg-gray-100 rounded-lg p-4 overflow-hidden">
                             <InvitationCard
                                 ref={cardRef}
@@ -804,7 +707,6 @@ export default function GuestsPage() {
                             />
                         </div>
 
-                        {/* Download Buttons */}
                         <div className="flex flex-col sm:flex-row gap-3">
                             <button
                                 onClick={() => handleDownload("png")}
@@ -850,7 +752,6 @@ export default function GuestsPage() {
                             </button>
                         </div>
 
-                        {/* Close Button */}
                         <button
                             onClick={closeDownloadModal}
                             className="w-full mt-3 px-4 py-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
@@ -861,7 +762,6 @@ export default function GuestsPage() {
                 </div>
             )}
 
-            {/* Bulk Print Modal */}
             {showBulkPrintModal && eventSettings && themeSettings && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">

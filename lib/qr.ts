@@ -1,14 +1,5 @@
-// QR Code generation utilities
-// Menggunakan library qrcode untuk generate QR code
-
 import QRCode from "qrcode";
 
-/**
- * Generate QR Code sebagai Data URL (base64)
- * Digunakan untuk menampilkan QR di halaman web
- * @param data - String data yang akan di-encode ke QR
- * @returns Promise<string> - Data URL (base64) dari QR code
- */
 export async function generateQRCodeDataURL(data: string): Promise<string> {
     try {
         const qrDataURL = await QRCode.toDataURL(data, {
@@ -27,12 +18,6 @@ export async function generateQRCodeDataURL(data: string): Promise<string> {
     }
 }
 
-/**
- * Generate QR Code sebagai SVG string
- * Digunakan untuk export/print dengan kualitas tinggi
- * @param data - String data yang akan di-encode ke QR
- * @returns Promise<string> - SVG string
- */
 export async function generateQRCodeSVG(data: string): Promise<string> {
     try {
         const qrSVG = await QRCode.toString(data, {
@@ -52,12 +37,6 @@ export async function generateQRCodeSVG(data: string): Promise<string> {
     }
 }
 
-/**
- * Validasi QR code string
- * Memeriksa apakah string QR valid (UUID format)
- * @param qrString - String QR code
- * @returns Boolean - valid atau tidak
- */
 export function isValidQRString(qrString: string): boolean {
     const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

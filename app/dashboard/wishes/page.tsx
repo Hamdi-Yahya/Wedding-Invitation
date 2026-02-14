@@ -1,13 +1,7 @@
-// Wishes Moderation Page
-// Halaman untuk moderasi ucapan dari tamu
-
 "use client";
 
 import { useState, useEffect } from "react";
 
-/**
- * Interface untuk data Wish
- */
 interface Wish {
     id: number;
     message: string;
@@ -18,25 +12,15 @@ interface Wish {
     };
 }
 
-/**
- * WishesPage Component
- * Halaman moderasi ucapan tamu
- */
 export default function WishesPage() {
     const [wishes, setWishes] = useState<Wish[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
 
-    /**
-     * Fetch daftar ucapan dari API
-     */
     useEffect(() => {
         fetchWishes();
     }, []);
 
-    /**
-     * Fungsi untuk fetch daftar ucapan
-     */
     async function fetchWishes() {
         try {
             const response = await fetch("/api/wishes?all=true");
@@ -51,9 +35,6 @@ export default function WishesPage() {
         }
     }
 
-    /**
-     * Toggle status approval ucapan
-     */
     async function toggleApproval(id: number, currentStatus: boolean) {
         try {
             const response = await fetch(`/api/wishes/${id}`, {
@@ -74,9 +55,6 @@ export default function WishesPage() {
         }
     }
 
-    /**
-     * Hapus ucapan
-     */
     async function deleteWish(id: number) {
         if (!confirm("Apakah Anda yakin ingin menghapus ucapan ini?")) return;
 
@@ -90,24 +68,15 @@ export default function WishesPage() {
         }
     }
 
-    /**
-     * Filter ucapan berdasarkan status
-     */
     const filteredWishes = wishes.filter((wish) => {
         if (filter === "pending") return !wish.isApproved;
         if (filter === "approved") return wish.isApproved;
         return true;
     });
 
-    /**
-     * Count untuk statistik
-     */
     const pendingCount = wishes.filter((w) => !w.isApproved).length;
     const approvedCount = wishes.filter((w) => w.isApproved).length;
 
-    /**
-     * Approve semua ucapan sekaligus
-     */
     async function approveAll() {
         if (pendingCount === 0) return;
         if (!confirm(`Apakah Anda yakin ingin menyetujui ${pendingCount} ucapan?`)) return;
@@ -118,7 +87,6 @@ export default function WishesPage() {
             });
 
             if (response.ok) {
-                // Update state lokal
                 setWishes((prev) =>
                     prev.map((wish) => ({ ...wish, isApproved: true }))
                 );
@@ -138,7 +106,6 @@ export default function WishesPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="flex justify-between items-start mb-8">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#5C4A3D]">Ucapan</h1>
@@ -157,7 +124,6 @@ export default function WishesPage() {
                 )}
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mb-6">
                 <button
                     onClick={() => setFilter("all")}
@@ -191,7 +157,6 @@ export default function WishesPage() {
                 </button>
             </div>
 
-            {/* Wishes List */}
             <div className="space-y-4">
                 {filteredWishes.length === 0 ? (
                     <div className="bg-white rounded-xl p-8 text-center text-[#A89080]">

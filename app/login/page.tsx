@@ -1,25 +1,14 @@
-// Halaman Login Admin
-// Client Component untuk form login dengan NextAuth
-
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-/**
- * LoginPage Component
- * Form login untuk admin dengan validasi dan error handling
- */
 export default function LoginPage() {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    /**
-     * Handle form submission
-     * @param e - Form event
-     */
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
@@ -52,7 +41,6 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#F5E6E0] px-4">
             <div className="w-full max-w-md">
-                {/* Logo/Brand */}
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-serif text-[#5C4A3D] mb-2">
                         Wedding Invitation
@@ -60,22 +48,18 @@ export default function LoginPage() {
                     <p className="text-[#A89080]">Admin Dashboard</p>
                 </div>
 
-                {/* Login Card */}
                 <div className="bg-white rounded-2xl shadow-lg p-8">
                     <h2 className="text-2xl font-semibold text-[#5C4A3D] mb-6 text-center">
                         Masuk ke Dashboard
                     </h2>
 
-                    {/* Error Message */}
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
                             {error}
                         </div>
                     )}
 
-                    {/* Login Form */}
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Username Field */}
                         <div>
                             <label
                                 htmlFor="username"
@@ -93,7 +77,6 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        {/* Password Field */}
                         <div>
                             <label
                                 htmlFor="password"
@@ -111,7 +94,6 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={isLoading}
@@ -147,7 +129,6 @@ export default function LoginPage() {
                     </form>
                 </div>
 
-                {/* Footer */}
                 <p className="text-center text-sm text-[#A89080] mt-6">
                     Default: admin / admin123
                 </p>

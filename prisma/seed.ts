@@ -1,22 +1,13 @@
-// Simple seed script untuk Prisma 7.x
-// Jalankan dengan: npx tsx prisma/seed.ts
-
-// Prisma 7.x menggunakan import dari @prisma/client/default
 const { PrismaClient } = require("@prisma/client/default");
 const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
-/**
- * Fungsi utama untuk seeding database
- */
 async function main() {
     console.log("🌱 Starting seed...");
 
-    // Hash password untuk admin
     const hashedPassword = await bcrypt.hash("admin123", 10);
 
-    // Buat admin default
     const admin = await prisma.admin.upsert({
         where: { username: "admin" },
         update: {},
@@ -27,7 +18,6 @@ async function main() {
     });
     console.log("✅ Admin created:", admin.username);
 
-    // Buat event settings default
     await prisma.eventSettings.upsert({
         where: { id: 1 },
         update: {},
@@ -47,7 +37,6 @@ async function main() {
     });
     console.log("✅ Event settings created");
 
-    // Buat theme settings default
     await prisma.themeSettings.upsert({
         where: { id: 1 },
         update: {},
@@ -61,7 +50,6 @@ async function main() {
     });
     console.log("✅ Theme settings created");
 
-    // Buat sample guest untuk testing
     const sampleGuest = await prisma.guest.upsert({
         where: { slug: "john-doe" },
         update: {},
@@ -81,9 +69,6 @@ async function main() {
     console.log("\n📌 Test invitation URL: http://localhost:3000/invite/john-doe");
 }
 
-/**
- * Jalankan seed dan handle error
- */
 main()
     .catch((e) => {
         console.error("❌ Seed error:", e);

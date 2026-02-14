@@ -1,15 +1,9 @@
-// Theme Settings Page
-// Form untuk mengelola tema undangan dengan fitur upload background
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-/**
- * Interface untuk data ThemeSettings
- */
 interface ThemeSettings {
     id: number;
     themeName: string;
@@ -19,14 +13,8 @@ interface ThemeSettings {
     backgroundImageUrl: string;
 }
 
-/**
- * Default background image URL
- */
 const DEFAULT_BACKGROUND_URL = "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=1600";
 
-/**
- * Preset font families yang tersedia
- */
 const fontOptions = [
     "Playfair Display",
     "Great Vibes",
@@ -37,10 +25,6 @@ const fontOptions = [
     "Libre Baskerville",
 ];
 
-/**
- * ThemeSettingsPage Component
- * Form untuk update tema undangan dengan upload background
- */
 export default function ThemeSettingsPage() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,9 +45,6 @@ export default function ThemeSettingsPage() {
         backgroundImageUrl: "",
     });
 
-    /**
-     * Fetch data ThemeSettings dari API
-     */
     useEffect(() => {
         async function fetchData() {
             try {
@@ -72,7 +53,6 @@ export default function ThemeSettingsPage() {
                     const data = await response.json();
                     if (data) {
                         setFormData(data);
-                        // Check if using custom background
                         if (data.backgroundImageUrl && data.backgroundImageUrl !== DEFAULT_BACKGROUND_URL) {
                             setUseCustomBackground(true);
                         }
@@ -87,9 +67,6 @@ export default function ThemeSettingsPage() {
         fetchData();
     }, []);
 
-    /**
-     * Handle perubahan input
-     */
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) {
@@ -97,20 +74,15 @@ export default function ThemeSettingsPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    /**
-     * Handle upload file gambar background
-     */
     async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validate file type
         if (!file.type.startsWith("image/")) {
             setMessage({ type: "error", text: "File harus berupa gambar (JPG, PNG, WebP)" });
             return;
         }
 
-        // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             setMessage({ type: "error", text: "Ukuran file maksimal 5MB" });
             return;
@@ -146,17 +118,11 @@ export default function ThemeSettingsPage() {
         }
     }
 
-    /**
-     * Handle switch ke default background
-     */
     function handleUseDefaultBackground() {
         setUseCustomBackground(false);
         setFormData((prev) => ({ ...prev, backgroundImageUrl: "" }));
     }
 
-    /**
-     * Handle submit form
-     */
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsSaving(true);
@@ -183,9 +149,6 @@ export default function ThemeSettingsPage() {
         }
     }
 
-    /**
-     * Get current background URL for preview
-     */
     function getCurrentBackgroundUrl(): string {
         if (useCustomBackground && formData.backgroundImageUrl) {
             return formData.backgroundImageUrl;
@@ -203,13 +166,11 @@ export default function ThemeSettingsPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-semibold text-[#5C4A3D]">Theme Settings</h1>
                 <p className="text-[#A89080] mt-1">Kustomisasi tampilan undangan Anda</p>
             </div>
 
-            {/* Message */}
             {message && (
                 <div
                     className={`mb-6 p-4 rounded-lg ${message.type === "success"
@@ -222,13 +183,10 @@ export default function ThemeSettingsPage() {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Basic Settings Card */}
                     <div className="bg-white rounded-xl p-6 shadow-sm">
                         <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">Pengaturan Dasar</h2>
 
-                        {/* Theme Name */}
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-[#5C4A3D] mb-2">
                                 Nama Tema
@@ -244,7 +202,6 @@ export default function ThemeSettingsPage() {
                             />
                         </div>
 
-                        {/* Colors */}
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             <div>
                                 <label className="block text-sm font-medium text-[#5C4A3D] mb-2">
@@ -292,7 +249,6 @@ export default function ThemeSettingsPage() {
                             </div>
                         </div>
 
-                        {/* Font Family */}
                         <div>
                             <label className="block text-sm font-medium text-[#5C4A3D] mb-2">
                                 Font Family
@@ -312,11 +268,9 @@ export default function ThemeSettingsPage() {
                         </div>
                     </div>
 
-                    {/* Background Image Card */}
                     <div className="bg-white rounded-xl p-6 shadow-sm">
                         <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">Background Hero</h2>
 
-                        {/* Background Type Selection */}
                         <div className="space-y-3 mb-6">
                             <label className="flex items-center gap-3 p-3 border border-[#E5D5C5] rounded-lg cursor-pointer hover:bg-[#FAF7F5] transition-colors">
                                 <input
@@ -346,10 +300,8 @@ export default function ThemeSettingsPage() {
                             </label>
                         </div>
 
-                        {/* Upload Section - Only show when custom is selected */}
                         {useCustomBackground && (
                             <div className="space-y-4">
-                                {/* Current Background Preview */}
                                 {formData.backgroundImageUrl ? (
                                     <div className="relative w-full h-32 rounded-lg overflow-hidden border border-[#E5D5C5]">
                                         <Image
@@ -371,7 +323,6 @@ export default function ThemeSettingsPage() {
                                     </div>
                                 ) : (
                                     <>
-                                        {/* Upload Button - Only show if no image uploaded */}
                                         <input
                                             ref={fileInputRef}
                                             type="file"
@@ -402,7 +353,6 @@ export default function ThemeSettingsPage() {
                                     </>
                                 )}
 
-                                {/* Size Recommendation */}
                                 <div className="bg-[#FFF9F9] p-3 rounded-lg border border-[#F5E6E0]">
                                     <p className="text-sm text-[#5C4A3D] font-medium mb-1">📐 Rekomendasi Ukuran:</p>
                                     <p className="text-sm text-[#A89080]">
@@ -414,7 +364,6 @@ export default function ThemeSettingsPage() {
                         )}
                     </div>
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isSaving}
@@ -424,7 +373,6 @@ export default function ThemeSettingsPage() {
                     </button>
                 </form>
 
-                {/* Preview */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">Preview</h2>
                     <div
@@ -433,7 +381,6 @@ export default function ThemeSettingsPage() {
                             backgroundColor: formData.secondaryColor,
                         }}
                     >
-                        {/* Background Image */}
                         <div
                             className="absolute inset-0 bg-cover bg-center"
                             style={{
@@ -443,7 +390,6 @@ export default function ThemeSettingsPage() {
                             <div className="absolute inset-0 bg-black/30"></div>
                         </div>
 
-                        {/* Content */}
                         <div className="text-center relative z-10">
                             <p className="text-sm mb-2 text-white/80">
                                 The Wedding of

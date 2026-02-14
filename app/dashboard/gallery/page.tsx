@@ -1,13 +1,8 @@
-// Gallery Management Page
-// Halaman untuk mengelola galeri foto pernikahan
 
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 
-/**
- * Interface untuk data GalleryImage
- */
 interface GalleryImage {
     id: number;
     imageUrl: string;
@@ -16,10 +11,6 @@ interface GalleryImage {
     isActive: boolean;
 }
 
-/**
- * GalleryPage Component
- * Halaman CRUD untuk mengelola galeri foto
- */
 export default function GalleryPage() {
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -31,16 +22,10 @@ export default function GalleryPage() {
     const [uploadedImageUrl, setUploadedImageUrl] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    /**
-     * Fetch gallery images dari API
-     */
     useEffect(() => {
         fetchImages();
     }, []);
 
-    /**
-     * Fungsi untuk fetch gallery images
-     */
     async function fetchImages() {
         try {
             const response = await fetch("/api/gallery");
@@ -55,35 +40,28 @@ export default function GalleryPage() {
         }
     }
 
-    /**
-     * Handle file selection dan upload
-     */
     async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validasi tipe file
         const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
         if (!allowedTypes.includes(file.type)) {
             alert("Tipe file tidak didukung. Gunakan JPEG, PNG, WebP, atau GIF.");
             return;
         }
 
-        // Validasi ukuran file (max 5MB)
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
             alert("Ukuran file terlalu besar. Maksimal 5MB.");
             return;
         }
 
-        // Show preview
         const reader = new FileReader();
         reader.onloadend = () => {
             setPreviewUrl(reader.result as string);
         };
         reader.readAsDataURL(file);
 
-        // Upload file
         setIsUploading(true);
         try {
             const formData = new FormData();
@@ -111,9 +89,6 @@ export default function GalleryPage() {
         }
     }
 
-    /**
-     * Handle submit form (create/update)
-     */
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
@@ -126,7 +101,6 @@ export default function GalleryPage() {
 
         try {
             if (editingImage) {
-                // Update existing image (only altText)
                 const response = await fetch(`/api/gallery/${editingImage.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
@@ -143,7 +117,6 @@ export default function GalleryPage() {
                     );
                 }
             } else {
-                // Create new image
                 const response = await fetch("/api/gallery", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -162,9 +135,6 @@ export default function GalleryPage() {
         }
     }
 
-    /**
-     * Handle delete image
-     */
     async function handleDelete(id: number) {
         if (!confirm("Apakah Anda yakin ingin menghapus gambar ini?")) return;
 
@@ -181,9 +151,6 @@ export default function GalleryPage() {
         }
     }
 
-    /**
-     * Open modal untuk tambah gambar baru
-     */
     function openAddModal() {
         setEditingImage(null);
         setPreviewUrl("");
@@ -192,9 +159,6 @@ export default function GalleryPage() {
         setShowModal(true);
     }
 
-    /**
-     * Open modal untuk edit gambar
-     */
     function openEditModal(image: GalleryImage) {
         setEditingImage(image);
         setPreviewUrl(image.imageUrl);
@@ -203,9 +167,6 @@ export default function GalleryPage() {
         setShowModal(true);
     }
 
-    /**
-     * Tutup modal
-     */
     function closeModal() {
         setShowModal(false);
         setEditingImage(null);
@@ -227,7 +188,6 @@ export default function GalleryPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="flex justify-between items-start mb-8">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#5C4A3D]">Galeri</h1>
@@ -244,14 +204,12 @@ export default function GalleryPage() {
                 </button>
             </div>
 
-            {/* Stats */}
             <div className="bg-white rounded-xl p-4 mb-6">
                 <p className="text-[#5C4A3D]">
                     Total: <span className="font-bold">{images.length}</span> foto
                 </p>
             </div>
 
-            {/* Gallery Grid */}
             {images.length === 0 ? (
                 <div className="bg-white rounded-xl p-8 text-center text-[#A89080]">
                     <svg
@@ -283,7 +241,6 @@ export default function GalleryPage() {
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            {/* Overlay with actions */}
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                 <button
                                     onClick={() => openEditModal(image)}
@@ -304,7 +261,6 @@ export default function GalleryPage() {
                                     </svg>
                                 </button>
                             </div>
-                            {/* Alt text */}
                             {image.altText && (
                                 <div className="p-2 text-xs text-[#A89080] truncate">
                                     {image.altText}
@@ -315,7 +271,6 @@ export default function GalleryPage() {
                 </div>
             )}
 
-            {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
@@ -323,7 +278,6 @@ export default function GalleryPage() {
                             {editingImage ? "Edit Foto" : "Tambah Foto"}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Upload Area - only for new images */}
                             {!editingImage && (
                                 <div>
                                     <label className="block text-sm font-medium text-[#5C4A3D] mb-2">
@@ -367,7 +321,6 @@ export default function GalleryPage() {
                                 </div>
                             )}
 
-                            {/* Preview for editing */}
                             {editingImage && (
                                 <div className="border border-[#E5D5C5] rounded-lg p-2">
                                     <p className="text-xs text-[#A89080] mb-2">Gambar saat ini:</p>
@@ -379,7 +332,6 @@ export default function GalleryPage() {
                                 </div>
                             )}
 
-                            {/* Alt Text */}
                             <div>
                                 <label className="block text-sm font-medium text-[#5C4A3D] mb-2">
                                     Deskripsi Gambar
@@ -393,7 +345,6 @@ export default function GalleryPage() {
                                 />
                             </div>
 
-                            {/* Buttons */}
                             <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"

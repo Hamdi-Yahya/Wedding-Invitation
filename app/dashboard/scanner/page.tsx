@@ -1,14 +1,8 @@
-// QR Scanner Page
-// Halaman untuk scan QR code tamu dan check-in
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
-/**
- * Interface untuk data Guest dari scan
- */
 interface ScannedGuest {
     id: number;
     name: string;
@@ -18,10 +12,6 @@ interface ScannedGuest {
     checkInTime: string | null;
 }
 
-/**
- * ScannerPage Component
- * Halaman QR Scanner untuk check-in tamu
- */
 export default function ScannerPage() {
     const [isScanning, setIsScanning] = useState(false);
     const [scannedGuest, setScannedGuest] = useState<ScannedGuest | null>(null);
@@ -33,19 +23,13 @@ export default function ScannerPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
 
-    /**
-     * Start QR Scanner
-     */
     async function startScanner() {
-        // Set scanning state first so element is visible
         setIsScanning(true);
         setMessage({ type: "info", text: "Mengaktifkan kamera..." });
 
-        // Small delay to ensure DOM element is visible
         await new Promise(resolve => setTimeout(resolve, 200));
 
         try {
-            // Get element dimensions for dynamic qrbox
             const readerElement = document.getElementById("qr-reader");
             const width = readerElement?.clientWidth || 300;
             const qrboxSize = Math.min(width * 0.7, 200);
@@ -53,7 +37,6 @@ export default function ScannerPage() {
             const scanner = new Html5Qrcode("qr-reader", { verbose: false });
             scannerRef.current = scanner;
 
-            // Configuration untuk scanning yang lebih baik
             const config = {
                 fps: 15,
                 qrbox: { width: qrboxSize, height: qrboxSize },
@@ -64,7 +47,7 @@ export default function ScannerPage() {
                 { facingMode: "environment" },
                 config,
                 onScanSuccess,
-                () => { } // Ignore scan failures
+                () => { }
             );
 
             setMessage({ type: "success", text: "Kamera aktif. Arahkan ke QR Code." });
@@ -72,7 +55,6 @@ export default function ScannerPage() {
             console.error("Error starting scanner:", error);
             setIsScanning(false);
 
-            // More specific error messages
             const errorMessage = error instanceof Error ? error.message : "Unknown error";
             if (errorMessage.includes("NotAllowedError") || errorMessage.includes("Permission")) {
                 setMessage({
@@ -93,16 +75,13 @@ export default function ScannerPage() {
         }
     }
 
-    /**
-     * Stop QR Scanner
-     */
     async function stopScanner() {
         if (scannerRef.current) {
             try {
                 const scanner = scannerRef.current;
-                scannerRef.current = null; // Clear ref first to prevent double stop
+                scannerRef.current = null;
                 await scanner.stop();
-                await scanner.clear(); // Clear the scanner element
+                await scanner.clear();
             } catch (error) {
                 console.error("Error stopping scanner:", error);
             } finally {
@@ -114,17 +93,11 @@ export default function ScannerPage() {
         }
     }
 
-    /**
-     * Handle successful QR scan
-     */
     async function onScanSuccess(qrCodeString: string) {
         await stopScanner();
         await validateQRCode(qrCodeString);
     }
 
-    /**
-     * Validate QR code dan fetch data tamu
-     */
     async function validateQRCode(qrCode: string) {
         setIsProcessing(true);
         setMessage({ type: "info", text: "Memvalidasi QR code..." });
@@ -159,9 +132,6 @@ export default function ScannerPage() {
         }
     }
 
-    /**
-     * Handle manual code input
-     */
     function handleManualSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (manualCode.trim()) {
@@ -169,9 +139,6 @@ export default function ScannerPage() {
         }
     }
 
-    /**
-     * Confirm check-in
-     */
     async function confirmCheckIn() {
         if (!scannedGuest) return;
 
@@ -203,18 +170,12 @@ export default function ScannerPage() {
         }
     }
 
-    /**
-     * Reset scanner state
-     */
     function resetScanner() {
         setScannedGuest(null);
         setManualCode("");
         setMessage(null);
     }
 
-    /**
-     * Cleanup scanner on unmount
-     */
     useEffect(() => {
         return () => {
             if (scannerRef.current) {
@@ -227,7 +188,6 @@ export default function ScannerPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-semibold text-[#5C4A3D]">QR Scanner</h1>
                 <p className="text-[#A89080] mt-1">
@@ -236,13 +196,11 @@ export default function ScannerPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Scanner Section */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">
                         Scan QR Code
                     </h2>
 
-                    {/* QR Reader Container */}
                     <div
                         id="qr-reader"
                         className="w-full rounded-lg overflow-hidden bg-gray-100 mb-4"
@@ -252,7 +210,6 @@ export default function ScannerPage() {
                         }}
                     />
 
-                    {/* Placeholder when not scanning */}
                     {!isScanning && (
                         <div className="w-full aspect-square rounded-lg bg-gray-100 flex items-center justify-center mb-4">
                             <div className="text-center text-[#A89080]">
@@ -274,7 +231,6 @@ export default function ScannerPage() {
                         </div>
                     )}
 
-                    {/* Scanner Controls */}
                     <div className="flex gap-3">
                         {!isScanning ? (
                             <button
@@ -312,7 +268,6 @@ export default function ScannerPage() {
                         )}
                     </div>
 
-                    {/* Manual Input */}
                     <div className="mt-6 pt-6 border-t border-[#F0E6E0]">
                         <h3 className="text-sm font-medium text-[#5C4A3D] mb-3">
                             Input Manual QR Code
@@ -336,13 +291,11 @@ export default function ScannerPage() {
                     </div>
                 </div>
 
-                {/* Result Section */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-[#5C4A3D] mb-4">
                         Hasil Scan
                     </h2>
 
-                    {/* Message */}
                     {message && (
                         <div
                             className={`mb-4 p-3 rounded-lg ${message.type === "success"
@@ -356,7 +309,6 @@ export default function ScannerPage() {
                         </div>
                     )}
 
-                    {/* Guest Info */}
                     {scannedGuest ? (
                         <div className="space-y-4">
                             <div className="p-4 bg-[#F5E6E0] rounded-lg">
@@ -378,7 +330,6 @@ export default function ScannerPage() {
                                 </div>
                             </div>
 
-                            {/* Check-in Status */}
                             {scannedGuest.checkInTime ? (
                                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                                     <p className="text-green-700 font-medium">
@@ -390,7 +341,6 @@ export default function ScannerPage() {
                                 </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {/* Confirm Button */}
                                     <button
                                         onClick={confirmCheckIn}
                                         disabled={isProcessing}
@@ -414,7 +364,6 @@ export default function ScannerPage() {
                                 </div>
                             )}
 
-                            {/* Reset Button */}
                             <button
                                 onClick={resetScanner}
                                 className="w-full py-2 border border-[#E5D5C5] text-[#5C4A3D] rounded-lg hover:bg-[#F5E6E0] transition-colors"

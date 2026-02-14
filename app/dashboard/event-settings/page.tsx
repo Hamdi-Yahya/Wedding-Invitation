@@ -1,14 +1,8 @@
-// Event Settings Page
-// Halaman untuk mengatur detail acara pernikahan (gabungan Event Details + Wedding Details)
-
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-/**
- * Interface untuk data Event Settings (termasuk Wedding Details)
- */
 interface EventSettingsData {
     partner1Name: string;
     partner2Name: string;
@@ -20,7 +14,6 @@ interface EventSettingsData {
     venueAddress: string;
     mapLinkUrl: string;
     waTemplateMsg: string;
-    // Wedding Details
     ceremonyTitle: string;
     ceremonyTime: string;
     ceremonyVenue: string;
@@ -35,10 +28,6 @@ interface EventSettingsData {
     dressCodeStyle2: string;
 }
 
-/**
- * EventSettingsPage Component
- * Halaman pengaturan event dengan form lengkap
- */
 export default function EventSettingsPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +43,6 @@ export default function EventSettingsPage() {
         venueAddress: "",
         mapLinkUrl: "",
         waTemplateMsg: "",
-        // Wedding Details
         ceremonyTitle: "The Ceremony",
         ceremonyTime: "",
         ceremonyVenue: "",
@@ -69,13 +57,9 @@ export default function EventSettingsPage() {
         dressCodeStyle2: "Smart Casual",
     });
 
-    /**
-     * Fetch data event settings saat komponen mount
-     */
     useEffect(() => {
         async function fetchEventSettings() {
             try {
-                // Fetch event settings dan wedding details secara paralel
                 const [eventRes, weddingRes] = await Promise.all([
                     fetch("/api/event-settings"),
                     fetch("/api/wedding-details")
@@ -97,7 +81,6 @@ export default function EventSettingsPage() {
                     venueAddress: eventData.venueAddress || "",
                     mapLinkUrl: eventData.mapLinkUrl || "",
                     waTemplateMsg: eventData.waTemplateMsg || "",
-                    // Wedding Details
                     ceremonyTitle: weddingData.ceremonyTitle || "The Ceremony",
                     ceremonyTime: weddingData.ceremonyTime || "",
                     ceremonyVenue: weddingData.ceremonyVenue || "",
@@ -120,9 +103,6 @@ export default function EventSettingsPage() {
         fetchEventSettings();
     }, []);
 
-    /**
-     * Handle input change
-     */
     function handleChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) {
@@ -130,15 +110,11 @@ export default function EventSettingsPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    /**
-     * Handle form submit - simpan event settings dan wedding details
-     */
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setIsSaving(true);
 
         try {
-            // Pisahkan data untuk event dan wedding
             const eventData = {
                 partner1Name: formData.partner1Name,
                 partner2Name: formData.partner2Name,
@@ -167,7 +143,6 @@ export default function EventSettingsPage() {
                 dressCodeStyle2: formData.dressCodeStyle2,
             };
 
-            // Simpan kedua data secara paralel
             const [eventRes, weddingRes] = await Promise.all([
                 fetch("/api/event-settings", {
                     method: "PUT",
@@ -194,16 +169,10 @@ export default function EventSettingsPage() {
         }
     }
 
-    /**
-     * Handle discard changes
-     */
     function handleDiscard() {
         router.refresh();
     }
 
-    /**
-     * Get map embed URL untuk preview
-     */
     function getMapPreviewUrl(mapUrl: string): string {
         if (!mapUrl) return "";
         if (mapUrl.includes("embed")) return mapUrl;
@@ -220,7 +189,6 @@ export default function EventSettingsPage() {
 
     return (
         <div>
-            {/* Page Header */}
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">Event Details</h1>
@@ -250,7 +218,6 @@ export default function EventSettingsPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Couple's Information */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold text-gray-800">
@@ -307,7 +274,6 @@ export default function EventSettingsPage() {
                     </div>
                 </div>
 
-                {/* Date & Time */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold text-gray-800">Date & Time</h2>
@@ -358,7 +324,6 @@ export default function EventSettingsPage() {
                     </div>
                 </div>
 
-                {/* Location & Venue */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold text-gray-800">
@@ -395,7 +360,7 @@ export default function EventSettingsPage() {
                                     value={formData.venueAddress}
                                     onChange={handleChange}
                                     rows={3}
-                                    placeholder="123 Blossom Lane,&#10;Beverly Hills, CA 90210"
+                                    placeholder={"123 Blossom Lane,\nBeverly Hills, CA 90210"}
                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#E91E8C] focus:border-transparent outline-none resize-none"
                                 />
                             </div>
@@ -419,7 +384,6 @@ export default function EventSettingsPage() {
                             </div>
                         </div>
 
-                        {/* Map Preview */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Map Preview
@@ -451,7 +415,6 @@ export default function EventSettingsPage() {
                     </div>
                 </div>
 
-                {/* The Ceremony */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold text-gray-800">The Ceremony</h2>
@@ -508,7 +471,6 @@ export default function EventSettingsPage() {
                     </div>
                 </div>
 
-                {/* The Reception */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold text-gray-800">The Reception</h2>
@@ -565,7 +527,6 @@ export default function EventSettingsPage() {
                     </div>
                 </div>
 
-                {/* Dress Code */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold text-gray-800">Dress Code</h2>
@@ -622,7 +583,6 @@ export default function EventSettingsPage() {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-4 pt-4">
                     <button
                         type="button"

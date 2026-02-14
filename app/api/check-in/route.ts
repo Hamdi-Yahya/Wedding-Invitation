@@ -1,20 +1,11 @@
-// API Route untuk Check-in
-// POST: Validasi QR atau konfirmasi check-in
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * POST /api/check-in
- * Action: "validate" - Validasi QR code dan ambil data tamu
- * Action: "checkin" - Konfirmasi check-in dengan update waktu dan kado
- */
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const action = body.action;
 
-        // Validate QR Code
         if (action === "validate") {
             if (!body.qrCodeString) {
                 return NextResponse.json(
@@ -45,7 +36,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ guest });
         }
 
-        // Confirm Check-in
         if (action === "checkin") {
             if (!body.guestId) {
                 return NextResponse.json(
